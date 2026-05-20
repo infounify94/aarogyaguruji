@@ -57,7 +57,7 @@ def _get_blogger_service():
     return service
 
 
-def publish_post(title: str, body_html: str, tags: list = None, draft: bool = False) -> dict:
+def publish_post(title: str, body_html: str, tags: list = None, draft: bool = False, english_slug: str = None) -> dict:
     """
     Publish a new post to the Blogger blog.
     
@@ -66,15 +66,19 @@ def publish_post(title: str, body_html: str, tags: list = None, draft: bool = Fa
         body_html: Full HTML content of the post
         tags: List of label/tag strings
         draft: If True, save as draft instead of publishing
+        english_slug: English title to set as temporary title to generate a clean URL
     
     Returns:
         dict with: id, url, title, published
     """
     service = _get_blogger_service()
     
+    # If an English slug is provided and we are publishing, use it as the initial title for the URL
+    initial_title = english_slug if (english_slug and not draft) else title
+    
     post_body = {
         "kind": "blogger#post",
-        "title": title,
+        "title": initial_title,
         "content": body_html,
     }
     
@@ -97,6 +101,16 @@ def publish_post(title: str, body_html: str, tags: list = None, draft: bool = Fa
                 fetchBody=False
             ).execute()
             status = "PUBLISHED"
+            
+            # If we used a temporary English slug, immediately patch it back to the real Telugu title
+            if english_slug and initial_title != title:
+                post_id = result.get("id")
+                print(f"🔄 Updating title from slug '{initial_title}' to '{title}'...")
+                result = service.posts().patch(
+                    blogId=BLOG_ID,
+                    postId=post_id,
+                    body={"title": title}
+                ).execute()
         
         post_url = result.get("url", "")
         post_id = result.get("id", "")

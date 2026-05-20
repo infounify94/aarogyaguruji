@@ -18,7 +18,7 @@ import io
 
 # Fix Windows console encoding for Unicode emojis
 if sys.platform == 'win32':
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace', write_through=True)
 
 from pathlib import Path
 
@@ -35,6 +35,23 @@ from content_generator import generate_article, inject_image
 from image_fetcher import fetch_image
 from blogger_publisher import get_blog_info, publish_post
 from duplicate_checker import mark_as_posted
+
+import json
+
+def get_past_urls(count: int = 5) -> list:
+    """Fetch the latest published URLs from tracker for internal linking."""
+    try:
+        tracker_file = Path(__file__).parent.parent / "data" / "posted_topics.json"
+        if not tracker_file.exists():
+            return []
+        with open(tracker_file, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        posted = data.get("posted", [])
+        recent = posted[:count] if posted else []
+        return [{"title": p["title"], "url": p["url"]} for p in recent]
+    except Exception as e:
+        print(f"   ⚠️ Could not load past URLs for internal linking: {e}")
+        return []
 
 # Test article topic
 TEST_TOPIC = "తులసి ఆకుల ఔషధ గుణాలు - 10 వ్యాధులకు రామబాణం"
@@ -71,7 +88,8 @@ def run_test():
     print(f"✍️  Step 2: Generating article...")
     print(f"   Topic: {TEST_TOPIC}")
     try:
-        article = generate_article(TEST_TOPIC)
+        past_urls = get_past_urls(count=5)
+        article = generate_article(TEST_TOPIC, past_urls=past_urls)
         print(f"   ✅ Generated: '{article['title']}'")
         print(f"   📝 Length: {len(article['body_html'])} chars")
         print(f"   🏷️  Tags: {', '.join(article['tags'][:5])}...")
@@ -104,7 +122,8 @@ def run_test():
             title=article["title"],
             body_html=final_html,
             tags=article["tags"],
-            draft=False  # Change to True to save as draft for testing
+            draft=False,  # Change to True to save as draft for testing
+            english_slug=article.get("slug")
         )
         
         print()

@@ -35,6 +35,24 @@ from image_fetcher import fetch_image
 from blogger_publisher import publish_post, get_blog_info
 from duplicate_checker import filter_new_topics, mark_as_posted, get_stats
 
+import json
+
+def get_past_urls(count: int = 5) -> list:
+    """Fetch the latest published URLs from tracker for internal linking."""
+    try:
+        tracker_file = Path(__file__).parent.parent / "data" / "posted_topics.json"
+        if not tracker_file.exists():
+            return []
+        with open(tracker_file, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        posted = data.get("posted", [])
+        # Get the latest 'count' posts
+        recent = posted[:count] if posted else []
+        return [{"title": p["title"], "url": p["url"]} for p in recent]
+    except Exception as e:
+        log.warning(f"⚠️ Could not load past URLs for internal linking: {e}")
+        return []
+
 # ============================================================
 # Configuration
 # ============================================================
@@ -105,8 +123,11 @@ def run_batch():
         log.info(f"{'='*50}")
         
         try:
+            # Get past URLs for internal linking
+            past_urls = get_past_urls(count=5)
+            
             # Generate article
-            article = generate_article(topic)
+            article = generate_article(topic, past_urls=past_urls)
             
             # Fetch image
             try:
@@ -121,7 +142,8 @@ def run_batch():
                 title=article["title"],
                 body_html=final_html,
                 tags=article["tags"],
-                draft=False
+                draft=False,
+                english_slug=article.get("slug")
             )
             
             # Track publication
