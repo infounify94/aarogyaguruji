@@ -36,9 +36,9 @@ if GEMINI_API_KEY:
 # Initialize Groq
 groq_client = Groq(api_key=GROQ_API_KEY) if GROQ_API_KEY else None
 
-# Gemini model - Flash 2.5 is fast and free
-MODEL_NAME = "gemini-2.5-flash"
-FALLBACK_MODEL = "gemini-2.5-flash"
+# Gemini model - Latest flash model
+MODEL_NAME = "gemini-3.5-flash"
+FALLBACK_MODEL = "gemini-3.5-flash"
 
 
 def _get_model():
@@ -217,11 +217,11 @@ def generate_article(topic: str, past_urls: list = None) -> dict:
             if not title:
                 title = topic  # Fallback to topic as title
             
-            # Length validation (Minimum ~3500 chars plain text)
+            # Length validation (Minimum ~3000 chars plain text)
             plain_text = re.sub(r"<[^>]+>", "", content)
             plain_text_clean = re.sub(r"\s+", " ", plain_text).strip()
             
-            if len(plain_text_clean) < 3500:
+            if len(plain_text_clean) < 3000:
                 print(f"⚠️ Generated article is too short ({len(plain_text_clean)} chars). Retrying...")
                 raise Exception("Article length validation failed (too short).")
             
@@ -246,10 +246,8 @@ def generate_article(topic: str, past_urls: list = None) -> dict:
         
         except Exception as e:
             if "quota" in str(e).lower() or "429" in str(e):
-                if groq_client:
-                    print(f"❌ Gemini rate limit hit. Failing fast because Groq fallback is enabled.")
-                    break  # Break out of Gemini loop to immediately try Groq
-                
+                # Always wait for Gemini's rate limits (which are per-minute), 
+                # because Groq's limits are per-day and might be exhausted.
                 if attempt < max_retries - 1:
                     wait_time = (attempt + 1) * 30
                     print(f"⏳ Gemini rate limit hit, waiting {wait_time}s... (attempt {attempt + 1}/{max_retries})")
