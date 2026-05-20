@@ -4,8 +4,9 @@ content_generator.py
 Generates Telugu health articles using Google Gemini AI.
 
 Features:
-- 1200-1800 word articles in simple, everyday Telugu
-- SEO-optimized HTML structure for Blogger
+- 1800-2500 word articles in simple, everyday Telugu
+- AdSense-friendly HTML structure (clean, no keyword stuffing)
+- Styled tables, tip boxes, and info boxes for reader engagement
 - Ayurveda content referenced from Atharva Veda and ancient texts
 - Human-like writing style (not robotic AI tone)
 - Proper subheadings, bullet points, Q&A sections
@@ -50,8 +51,8 @@ def _get_model():
 
 
 def _build_article_prompt(topic: str, past_urls: list = None) -> str:
-    """Build the article generation prompt."""
-    
+    """Build the AdSense-ready, reader-friendly article generation prompt."""
+
     links_text = ""
     if past_urls:
         links_text = "\nకింది మన పాత ఆర్టికల్స్ లింక్స్ ని వ్యాసంలో ఎక్కడైనా సంబంధం ఉన్నచోట సహజంగా (Natural anchor text) 1 లేదా 2 లింక్స్ గా (HTML <a> tag) వాడండి:\n"
@@ -63,66 +64,116 @@ def _build_article_prompt(topic: str, past_urls: list = None) -> str:
 విషయం: {topic}
 {links_text}
 
-కింది నిబంధనలు ఖచ్చితంగా పాటించు:
+ముఖ్యమైన నిబంధనలు:
+1. భాష: పూర్తిగా తెలుగులో రాయి. ఆంగ్ల పదాలు అవసరమైతే తెలుగు లిప్యంతరీకరణలో రాయి.
+2. నిడివి: కనీసం 1800 నుండి 2500 పదాలు ఉండాలి. ప్రతి విభాగాన్ని చాలా వివరంగా, లోతుగా వివరించు.
+3. శైలి: 100% సహజంగా, మనిషి రాసినట్లు, సంభాషణ శైలిలో రాయి. నాటకీయమైన AI greetings వాడకు. నేరుగా విషయంలోకి వెళ్ళు.
+4. ఆయుర్వేద: అవసరమైన చోట అథర్వ వేద, చరక సంహిత నుండి జ్ఞానం చేర్చు.
+5. AdSense నిబంధనలు: కీవర్డ్ స్టఫింగ్ చేయకు, అసలైన విలువైన సమాచారం మాత్రమే రాయి.
 
-1. భాష: పూర్తిగా తెలుగులో రాయి. ఆంగ్ల పదాలు అవసరమైతే తెలుగు లిప్యంతరీకరణతో రాయి.
-2. పదాలు: సులభమైన, వాడుక తెలుగు పదాలు వాడు. మరీ పెద్ద గ్రాంధిక పదాలు వాడకు.
-3. నిడివి: కనీసం 1200 నుండి 1800 పదాలు (Words) ఉండాలి. చాలా వివరంగా, లోతుగా వివరించు. షార్ట్ కట్ లో రాయద్దు. ప్రతి పాయింట్ కి ఉదాహరణలు, లాభాలు, ఎలా ఉపయోగించాలో వివరంగా రాయి.
-4. శైలి: సహజంగా, మనిషి రాసినట్లుగా (100% Human-written style) సింపుల్ సంభాషణ శైలిలో (Conversational) రాయి. "అమ్మలారా, అక్కలారా, బామ్మలారా", "రండి తెలుసుకుందాం", "స్వాగతం" లాంటి నాటకీయమైన, అతిశయోక్తి పదాలు (Dramatic AI greetings) అస్సలు వాడొద్దు. సూటిగా, ఆసక్తికరంగా నేరుగా విషయంలోకి వెళ్ళు. ప్రతి ఆర్టికల్ ఒకేలా మొదలవ్వకూడదు.
-5. ఆయుర్వేద: వర్తించే చోట అథర్వ వేద, చరక సంహిత, సుశ్రుత సంహిత నుండి జ్ఞానాన్ని సూచించు.
-
-ముఖ్యమైన సూచన: నీ జవాబు యొక్క మొదటి లైన్ లో తప్పనిసరిగా ఈ ఆర్టికల్ కి సరిపోయే ఒక ఆంగ్ల URL slug ని ఈ ఫార్మాట్ లో ఇవ్వు:
+మొదటి లైన్‌లో తప్పనిసరిగా URL slug ఇవ్వు:
 [SLUG: english-topic-slug-with-hyphens]
 
-HTML ఫార్మాట్ కోసం మార్గదర్శకత్వం (ఈ నిర్మాణాన్ని ఉపయోగించి పూర్తి వ్యాసాన్ని విస్తరించు):
+HTMLఫార్మాట్ (దీన్ని ఉపయోగించి పూర్తి వ్యాసం రాయి — అన్ని placeholders ని అసలు కంటెంట్‌తో పూరించు):
 
 <article>
-<h1>[ఇక్కడ ఆకర్షణీయమైన శీర్షిక రాయి - SEO ముఖ్యపదాలు ఉండాలి]</h1>
 
-<p class="intro">[ఇక్కడ సుమారు 5-6 వాక్యాల ముందుమాట రాయి. పాఠకుడిని ఆకట్టుకోవాలి]</p>
+<h1>[SEO ముఖ్యపదాలు ఉన్న ఆకర్షణీయమైన శీర్షిక - 60 అక్షరాల లోపు]</h1>
 
-[ముఖ్య చిత్రం ఇక్కడ వస్తుంది - {{IMAGE_PLACEHOLDER}}]
+<p style="font-size:1.1em; line-height:1.9; color:#2d2d2d;">[5-6 వాక్యాల బలమైన ముందుమాట. పాఠకుడిని వెంటనే ఆకట్టుకోవాలి. ఈ అంశం ఎందుకు ముఖ్యమో వివరించు.]</p>
 
-<h2>[ఇక్కడ మొదటి విభాగం శీర్షిక రాయి]</h2>
-<p>[ఇక్కడ ఆ అంశం గురించి కనీసం 200 పదాలతో పూర్తి వివరాలు రాయి. ఏది వదిలిపెట్టవద్దు.]</p>
-<p>[ఇంకా అదనపు సమాచారం, లాభాలు, లేదా చరిత్ర రాయి]</p>
+{{IMAGE_PLACEHOLDER}}
 
-<h2>[ఇక్కడ రెండవ విభాగం శీర్షిక రాయి - ఉదాహరణకు ఉపయోగాలు]</h2>
-<p>[ఇక్కడ కూడా కనీసం 200 పదాలతో వివరంగా రాయి]</p>
-<ul style="list-style-type: disc; padding-left: 20px;">
-<li>[వివరణాత్మక పాయింట్ 1]</li>
-<li>[వివరణాత్మక పాయింట్ 2]</li>
-<li>[వివరణాత్మక పాయింట్ 3]</li>
-<li>[వివరణాత్మక పాయింట్ 4]</li>
-<li>[వివరణాత్మక పాయింట్ 5]</li>
+<h2>[మొదటి విభాగం: మూల అంశం / పరిచయం]</h2>
+<p>[కనీసం 250 పదాలతో వివరంగా రాయి. చరిత్ర, శాస్త్రీయ నేపథ్యం, ఎందుకు ముఖ్యమో వివరించు.]</p>
+<p>[ఈ అంశంపై పాఠకుడికి పూర్తి అవగాహన కలిగించే అదనపు సమాచారం.]</p>
+
+<h2>[రెండవ విభాగం: ముఖ్య లాభాలు / ఉపయోగాలు]</h2>
+<p>[కనీసం 200 పదాలతో లాభాలను వివరించు.]</p>
+
+<!-- పోషక విలువలు లేదా ముఖ్య అంశాల పోలిక పట్టిక -->
+<div style="overflow-x:auto; margin:24px 0;">
+  <table style="width:100%; border-collapse:collapse; font-family:inherit; font-size:0.97em; border-radius:10px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+    <thead>
+      <tr style="background:linear-gradient(90deg,#1b5e20,#388e3c); color:#fff;">
+        <th style="padding:13px 16px; text-align:left; font-weight:600;">[కాలమ్ 1 పేరు]</th>
+        <th style="padding:13px 16px; text-align:left; font-weight:600;">[కాలమ్ 2 పేరు]</th>
+        <th style="padding:13px 16px; text-align:left; font-weight:600;">[కాలమ్ 3 పేరు]</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="background:#f1f8e9;">
+        <td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[విలువ 1]</td>
+        <td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[విలువ 2]</td>
+        <td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[విలువ 3]</td>
+      </tr>
+      <tr style="background:#fff;">
+        <td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[విలువ 4]</td>
+        <td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[విలువ 5]</td>
+        <td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[విలువ 6]</td>
+      </tr>
+      <tr style="background:#f1f8e9;">
+        <td style="padding:11px 16px;">[విలువ 7]</td>
+        <td style="padding:11px 16px;">[విలువ 8]</td>
+        <td style="padding:11px 16px;">[విలువ 9]</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<h2>[మూడవ విభాగం: ఎలా ఉపయోగించాలి / మోతాదు]</h2>
+<p>[కనీసం 200 పదాలతో వివరంగా రాయి. ఎలా వాడాలో, ఏ మోతాదులో వాడాలో స్పష్టంగా రాయి.]</p>
+<ul style="padding-left:22px; line-height:2;">
+  <li>[వివరమైన పాయింట్ 1]</li>
+  <li>[వివరమైన పాయింట్ 2]</li>
+  <li>[వివరమైన పాయింట్ 3]</li>
+  <li>[వివరమైన పాయింట్ 4]</li>
 </ul>
 
-<h2>[ఇక్కడ మూడవ విభాగం - ఆయుర్వేద/ఇంటి చిట్కాలు గురించి రాయి]</h2>
-<p>[దీనిని కూడా చాలా వివరంగా కనీసం 200 పదాలతో రాయి. ఎలా తయారు చేయాలి, ఎంత మోతాదులో వాడాలో స్పష్టంగా రాయి]</p>
+<!-- చిట్కా బాక్స్ -->
+<div style="background:#e8f5e9; border-left:5px solid #43a047; border-radius:8px; padding:18px 22px; margin:24px 0;">
+  <p style="margin:0; font-size:1em; line-height:1.8;"><strong>💡 ఆరోగ్య చిట్కా:</strong> [ఒక ముఖ్యమైన, ఆచరణాత్మక చిట్కా రాయి — పాఠకుడు వెంటనే అనుసరించగలిగేది.]</p>
+</div>
+
+<h2>[నాలుగవ విభాగం: ఆయుర్వేద దృక్పథం]</h2>
+<p>[కనీసం 200 పదాలతో ఆయుర్వేద ఆధారిత వివరాలు రాయి. ప్రాచీన గ్రంథాలను సూచించు.]</p>
+
+<!-- హెచ్చరిక బాక్స్ -->
+<div style="background:#fff8e1; border-left:5px solid #f9a825; border-radius:8px; padding:18px 22px; margin:24px 0;">
+  <p style="margin:0; font-size:1em; line-height:1.8;"><strong>⚠️ జాగ్రత్త:</strong> [ఎవరు వాడకూడదో, ఏ సందర్భంలో జాగ్రత్త అవసరమో సూటిగా రాయి.]</p>
+</div>
 
 <h2>తరచుగా అడిగే ప్రశ్నలు (FAQ)</h2>
-<h3>ప్రశ్న 1: [సాధారణ సందేహం]</h3>
-<p>[వివరమైన జవాబు]</p>
-<h3>ప్రశ్న 2: [సాధారణ సందేహం]</h3>
-<p>[వివరమైన జవాబు]</p>
-<h3>ప్రశ్న 3: [సాధారణ సందేహం]</h3>
-<p>[వివరమైన జవాబు]</p>
 
-<h2>ముఖ్యమైన జాగ్రత్తలు / ముగింపు</h2>
-<p>[ఎవరు వాడకూడదు, ఏ పరిస్థితుల్లో వైద్యుడిని సంప్రదించాలి అనేవి వివరంగా రాయి]</p>
+<h3>ప్రశ్న 1: [పాఠకులు అడిగే సాధారణ సందేహం]</h3>
+<p>[స్పష్టమైన, వివరమైన జవాబు — కనీసం 3-4 వాక్యాలు]</p>
 
-<div style="background: #f0f8ff; border-left: 4px solid #2196F3; padding: 15px; margin: 20px 0; border-radius: 4px;">
-<strong>🏥 గమనిక:</strong> ఈ వ్యాసంలో ఇచ్చిన సమాచారం సాధారణ అవగాహన కోసం మాత్రమే. ఆరోగ్య సమస్యలకు తప్పకుండా వైద్యుడిని సంప్రదించండి.
+<h3>ప్రశ్న 2: [పాఠకులు అడిగే సాధారణ సందేహం]</h3>
+<p>[స్పష్టమైన, వివరమైన జవాబు — కనీసం 3-4 వాక్యాలు]</p>
+
+<h3>ప్రశ్న 3: [పాఠకులు అడిగే సాధారణ సందేహం]</h3>
+<p>[స్పష్టమైన, వివరమైన జవాబు — కనీసం 3-4 వాక్యాలు]</p>
+
+<h3>ప్రశ్న 4: [పాఠకులు అడిగే సాధారణ సందేహం]</h3>
+<p>[స్పష్టమైన, వివరమైన జవాబు — కనీసం 3-4 వాక్యాలు]</p>
+
+<h2>ముగింపు</h2>
+<p>[100-150 పదాలతో బలమైన ముగింపు రాయి. ముఖ్యమైన విషయాలను సంక్షిప్తంగా గుర్తుచేసి, పాఠకుడిని ఉత్సాహపరచు.]</p>
+
+<!-- వైద్య నిరాకరణ -->
+<div style="background:#e3f2fd; border-left:5px solid #1976d2; border-radius:8px; padding:18px 22px; margin:28px 0;">
+  <p style="margin:0; font-size:0.95em; line-height:1.8; color:#1a237e;"><strong>🏥 వైద్య గమనిక:</strong> ఈ వ్యాసంలో అందించిన సమాచారం కేవలం సాధారణ అవగాహన కోసం మాత్రమే. ఇది వృత్తిపరమైన వైద్య సలహాకు ప్రత్యామ్నాయం కాదు. ఏదైనా ఆరోగ్య సమస్య ఉంటే తప్పకుండా అర్హత కలిగిన వైద్యుడిని సంప్రదించండి.</p>
 </div>
 
 </article>
 
-అదనపు సూచనలు:
-- దయచేసి వ్యాసాన్ని చాలా పెద్దగా, కనీసం 1200 పదాలతో రాయండి. 
-- ఉత్తుత్తి టెంప్లేట్ లా కాకుండా, పైన ఇచ్చిన నిర్మాణాన్ని ఉపయోగించి అసలు సమాచారంతో పూర్తి వ్యాసాన్ని పూరించండి.
-- హెడ్డింగ్స్ కు తగినట్లుగా చాలా కంటెంట్ రాయండి.
+ముఖ్యమైన సూచనలు:
+- పై నిర్మాణంలో అన్ని placeholders ని topic కి సంబంధించిన అసలు కంటెంట్‌తో పూరించు.
+- పట్టికలో వాస్తవమైన పోషక/వైద్య విలువలు రాయి (ఉదా: పోషకాంశం, మోతాదు, ప్రయోజనం).
+- చిట్కా బాక్స్‌లో ఒక ఆచరణాత్మక, వెంటనే అమలు చేయగలిగే సలహా రాయి.
+- వ్యాసాన్ని కనీసం 1800 పదాలతో పూర్తి చేయి.
 
-ఇప్పుడు పూర్తి, సుదీర్ఘమైన వ్యాసాన్ని రాయడం ప్రారంభించు:"""
+ఇప్పుడు పూర్తి, AdSense-ready వ్యాసాన్ని రాయడం ప్రారంభించు:"""
 
 
 def _extract_title(html_content: str) -> str:
@@ -191,9 +242,9 @@ def generate_article(topic: str, past_urls: list = None) -> dict:
             response = model.generate_content(
                 prompt,
                 generation_config=genai.GenerationConfig(
-                    temperature=0.85,
-                    top_p=0.9,
-                    max_output_tokens=3000,
+                    temperature=0.82,
+                    top_p=0.92,
+                    max_output_tokens=6000,
                 )
             )
             
@@ -221,7 +272,7 @@ def generate_article(topic: str, past_urls: list = None) -> dict:
             plain_text = re.sub(r"<[^>]+>", "", content)
             plain_text_clean = re.sub(r"\s+", " ", plain_text).strip()
             
-            if len(plain_text_clean) < 2000:
+            if len(plain_text_clean) < 2500:
                 print(f"⚠️ Generated article is too short ({len(plain_text_clean)} chars). Retrying...")
                 raise Exception("Article length validation failed (too short).")
             
@@ -265,12 +316,12 @@ def generate_article(topic: str, past_urls: list = None) -> dict:
             try:
                 chat_completion = groq_client.chat.completions.create(
                     messages=[
-                        {"role": "system", "content": "You are an expert Telugu health writer. You always strictly follow formatting instructions."},
+                        {"role": "system", "content": "You are an expert Telugu health writer. Follow all HTML formatting instructions exactly. Generate long, detailed, AdSense-ready articles with tables, tip boxes, and info boxes as instructed."},
                         {"role": "user", "content": prompt}
                     ],
                     model="llama-3.3-70b-versatile",
-                    temperature=0.7,
-                    max_tokens=3000,
+                    temperature=0.72,
+                    max_tokens=5000,
                 )
                 content = chat_completion.choices[0].message.content
                 
@@ -296,7 +347,7 @@ def generate_article(topic: str, past_urls: list = None) -> dict:
                 plain_text = re.sub(r"<[^>]+>", "", content)
                 plain_text_clean = re.sub(r"\s+", " ", plain_text).strip()
                 
-                if len(plain_text_clean) < 1500:
+                if len(plain_text_clean) < 2000:
                     print(f"⚠️ Groq generated article is too short ({len(plain_text_clean)} chars). Retrying... ({groq_attempt+1}/3)")
                     if groq_attempt == 2:
                         raise Exception("Groq article length validation failed after 3 attempts.")
