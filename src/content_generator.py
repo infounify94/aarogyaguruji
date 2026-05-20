@@ -310,58 +310,73 @@ def generate_article(topic: str, past_urls: list = None) -> dict:
                 if attempt < max_retries - 1:
                     time.sleep(5)
     
-    print("🔄 Attempting Groq fallback (llama-3.3-70b-versatile)...")
-    if groq_client:
+    # --- Groq Fallback Chain ---
+    # Fallback 1: llama-4-scout-17b (500K tokens/day — best daily budget)
+    # Fallback 2: llama-3.3-70b-versatile (100K tokens/day — best Telugu quality)
+    GROQ_MODELS = [
+        ("meta-llama/llama-4-scout-17b-16e-instruct", "Llama 4 Scout 17B"),
+        ("llama-3.3-70b-versatile",                   "Llama 3.3 70B Versatile"),
+    ]
+
+    if not groq_client:
+        print("❌ Groq fallback skipped: GROQ_API_KEY not configured.")
+        raise Exception(f"Failed to generate article for '{topic}' using both Gemini and Groq.")
+
+    groq_system = (
+        "You are an expert Telugu health writer. "
+        "Follow all HTML formatting instructions exactly. "
+        "Generate long, detailed, AdSense-ready articles with tables, "
+        "tip boxes, and info boxes as instructed."
+    )
+
+    for model_id, model_label in GROQ_MODELS:
+        print(f"🔄 Attempting Groq fallback ({model_label})...")
         for groq_attempt in range(3):
             try:
                 chat_completion = groq_client.chat.completions.create(
                     messages=[
-                        {"role": "system", "content": "You are an expert Telugu health writer. Follow all HTML formatting instructions exactly. Generate long, detailed, AdSense-ready articles with tables, tip boxes, and info boxes as instructed."},
-                        {"role": "user", "content": prompt}
+                        {"role": "system", "content": groq_system},
+                        {"role": "user",   "content": prompt}
                     ],
-                    model="llama-3.3-70b-versatile",
+                    model=model_id,
                     temperature=0.72,
                     max_tokens=5000,
                 )
                 content = chat_completion.choices[0].message.content
-                
+
                 # Clean up markdown code blocks if present
                 content = re.sub(r"```html\s*", "", content)
-                content = re.sub(r"```\s*$", "", content)
+                content = re.sub(r"```\s*$",   "", content)
                 content = content.strip()
-                
+
                 # Extract Slug
                 slug = "health-article"
                 slug_match = re.search(r"\[SLUG:\s*([^\]]+)\]", content)
                 if slug_match:
                     slug = slug_match.group(1).strip().lower().replace(" ", "-")
-                    # Remove the slug line from content
                     content = content.replace(slug_match.group(0), "").strip()
-                
+
                 # Extract title
                 title = _extract_title(content)
                 if not title:
-                    title = topic  # Fallback to topic as title
-            
-                # Length validation (Minimum ~3500 chars plain text, Groq relaxed to 2500)
+                    title = topic
+
+                # Length validation
                 plain_text = re.sub(r"<[^>]+>", "", content)
                 plain_text_clean = re.sub(r"\s+", " ", plain_text).strip()
-                
+
                 if len(plain_text_clean) < 2000:
-                    print(f"⚠️ Groq generated article is too short ({len(plain_text_clean)} chars). Retrying... ({groq_attempt+1}/3)")
+                    print(f"⚠️ {model_label} article too short ({len(plain_text_clean)} chars). Retrying... ({groq_attempt+1}/3)")
                     if groq_attempt == 2:
-                        raise Exception("Groq article length validation failed after 3 attempts.")
+                        raise Exception(f"{model_label} length validation failed after 3 attempts.")
                     time.sleep(2)
                     continue
-                
-                # Generate tags
+
+                # Generate tags & meta description
                 tags = _build_tags(topic)
-                
-                # Build meta description
                 meta_desc = plain_text_clean[:160] + "..." if len(plain_text_clean) > 160 else plain_text_clean
-                
-                print(f"✅ Article generated via Groq: '{title}' ({len(content)} chars)")
-                
+
+                print(f"✅ Article generated via {model_label}: '{title}' ({len(content)} chars)")
                 return {
                     "topic": topic,
                     "title": title,
@@ -370,15 +385,19 @@ def generate_article(topic: str, past_urls: list = None) -> dict:
                     "tags": tags,
                     "meta_description": meta_desc,
                 }
+
             except Exception as groq_e:
-                print(f"❌ Groq fallback failed on attempt {groq_attempt+1}: {groq_e}")
+                err = str(groq_e)
+                # If daily token limit hit, skip immediately to next model
+                if "rate_limit" in err.lower() or "429" in err or "quota" in err.lower():
+                    print(f"⚠️ {model_label} daily limit hit — trying next model...")
+                    break
+                print(f"❌ {model_label} failed on attempt {groq_attempt+1}: {groq_e}")
                 if groq_attempt == 2:
                     break
                 time.sleep(2)
-    else:
-        print("❌ Groq fallback skipped: GROQ_API_KEY not configured.")
 
-    raise Exception(f"Failed to generate article for '{topic}' using both Gemini and Groq.")
+    raise Exception(f"Failed to generate article for '{topic}' using Gemini and all Groq fallbacks.")
 
 
 def inject_image(body_html: str, image_html: str) -> str:
