@@ -36,9 +36,9 @@ if GEMINI_API_KEY:
 # Initialize Groq
 groq_client = Groq(api_key=GROQ_API_KEY) if GROQ_API_KEY else None
 
-# Gemini model - Latest flash model
-MODEL_NAME = "gemini-3.5-flash"
-FALLBACK_MODEL = "gemini-3.5-flash"
+# Gemini model - Flash 2.5 is fast and free
+MODEL_NAME = "gemini-2.5-flash"
+FALLBACK_MODEL = "gemini-2.5-flash"
 
 
 def _get_model():
@@ -217,11 +217,11 @@ def generate_article(topic: str, past_urls: list = None) -> dict:
             if not title:
                 title = topic  # Fallback to topic as title
             
-            # Length validation (Minimum ~3000 chars plain text)
+            # Length validation (Minimum ~2000 chars plain text)
             plain_text = re.sub(r"<[^>]+>", "", content)
             plain_text_clean = re.sub(r"\s+", " ", plain_text).strip()
             
-            if len(plain_text_clean) < 3000:
+            if len(plain_text_clean) < 2000:
                 print(f"⚠️ Generated article is too short ({len(plain_text_clean)} chars). Retrying...")
                 raise Exception("Article length validation failed (too short).")
             

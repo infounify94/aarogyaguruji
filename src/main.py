@@ -179,7 +179,7 @@ def run_batch():
     log.info(f"  ✅ Published: {len(published)} articles")
     log.info(f"  ❌ Failed:    {len(failed)} articles")
     log.info(f"  ⏱️  Duration: ~{duration} minutes")
-    log.info()
+    log.info("")
     
     if published:
         log.info("Published articles:")
