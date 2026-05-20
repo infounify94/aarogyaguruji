@@ -1,0 +1,125 @@
+name: AarogyaGuruji - Auto Publish Telugu Health Articles
+
+on:
+  # Run 3 times daily at 7AM, 1PM, 7PM IST
+  schedule:
+    - cron: '30 1 * * *'   # 07:00 AM IST (01:30 UTC)
+    - cron: '30 7 * * *'   # 01:00 PM IST (07:30 UTC)
+    - cron: '30 13 * * *'  # 07:00 PM IST (13:30 UTC)
+  
+  # Allow manual trigger from GitHub UI
+  workflow_dispatch:
+    inputs:
+      articles_count:
+        description: 'Number of articles to publish (default: 7)'
+        required: false
+        default: '7'
+      dry_run:
+        description: 'Dry run (generate but do not publish)'
+        required: false
+        default: 'false'
+
+jobs:
+  publish-articles:
+    runs-on: ubuntu-latest
+    
+    # Prevent multiple runs at same time
+    concurrency:
+      group: publish-articles
+      cancel-in-progress: false
+    
+    steps:
+      # ─────────────────────────────────────────────
+      # 1. Checkout repository
+      # ─────────────────────────────────────────────
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 1
+
+      # ─────────────────────────────────────────────
+      # 2. Setup Python
+      # ─────────────────────────────────────────────
+      - name: 🐍 Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      # ─────────────────────────────────────────────
+      # 3. Install Dependencies
+      # ─────────────────────────────────────────────
+      - name: 📦 Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # ─────────────────────────────────────────────
+      # 4. Configure Environment
+      # ─────────────────────────────────────────────
+      - name: ⚙️ Configure Environment
+        run: |
+          echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> $GITHUB_ENV
+          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> $GITHUB_ENV
+          echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> $GITHUB_ENV
+          echo "GOOGLE_REFRESH_TOKEN=${{ secrets.GOOGLE_REFRESH_TOKEN }}" >> $GITHUB_ENV
+          echo "PEXELS_API_KEY=${{ secrets.PEXELS_API_KEY }}" >> $GITHUB_ENV
+          echo "NEWSDATA_API_KEY=${{ secrets.NEWSDATA_API_KEY }}" >> $GITHUB_ENV
+          echo "BLOG_ID=${{ secrets.BLOG_ID }}" >> $GITHUB_ENV
+          echo "ARTICLES_PER_RUN=${{ github.event.inputs.articles_count || '7' }}" >> $GITHUB_ENV
+
+      # ─────────────────────────────────────────────
+      # 5. Pull latest data (avoid conflicts)
+      # ─────────────────────────────────────────────
+      - name: 🔄 Pull Latest Changes
+        run: |
+          git config user.name "AarogyaGuruji Bot"
+          git config user.email "bot@aarogyaguruji.com"
+          git pull --rebase origin main || git pull origin main
+
+      # ─────────────────────────────────────────────
+      # 6. Run the publisher
+      # ─────────────────────────────────────────────
+      - name: 🚀 Publish Health Articles
+        run: |
+          python src/main.py
+        env:
+          PYTHONUNBUFFERED: '1'
+          PYTHONPATH: 'src'
+
+      # ─────────────────────────────────────────────
+      # 7. Commit updated tracker
+      # ─────────────────────────────────────────────
+      - name: 💾 Update Published Topics Tracker
+        if: always()
+        run: |
+          git config user.name "AarogyaGuruji Bot"
+          git config user.email "bot@aarogyaguruji.com"
+          
+          # Check if tracker changed
+          if git diff --quiet data/posted_topics.json; then
+            echo "No new posts to track"
+          else
+            git add data/posted_topics.json
+            git commit -m "📝 Auto-published $(date '+%Y-%m-%d %H:%M IST') batch"
+            git push origin main
+            echo "✅ Tracker updated and pushed"
+          fi
+
+      # ─────────────────────────────────────────────
+      # 8. Output summary
+      # ─────────────────────────────────────────────
+      - name: 📊 Run Summary
+        if: always()
+        run: |
+          echo "## 📊 AarogyaGuruji Publishing Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Date**: $(date '+%Y-%m-%d %H:%M IST')" >> $GITHUB_STEP_SUMMARY
+          echo "**Blog ID**: ${{ env.BLOG_ID }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -f data/posted_topics.json ]; then
+            TOTAL=$(python -c "import json; d=json.load(open('data/posted_topics.json')); print(d.get('total_posts', 0))")
+            echo "**Total posts ever**: $TOTAL" >> $GITHUB_STEP_SUMMARY
+          fi
