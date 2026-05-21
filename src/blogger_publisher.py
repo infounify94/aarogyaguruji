@@ -68,6 +68,7 @@ def _build_schema_json(title: str, body_html: str, url_hint: str = "") -> str:
 
 
 
+from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
