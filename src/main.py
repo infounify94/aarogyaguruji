@@ -136,7 +136,7 @@ def run_batch():
                 final_html = inject_image(article["body_html"], image["html"])
             except Exception as img_err:
                 log.warning(f"⚠️  Image fetch failed: {img_err} — publishing without image")
-                final_html = article["body_html"]
+                final_html = inject_image(article["body_html"], "")
             
             # Publish to Blogger
             result = publish_post(

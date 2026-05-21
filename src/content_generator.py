@@ -15,8 +15,12 @@ Features:
 
 import os
 import re
+import sys
 import time
 import random
+
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
 
 # Fix for protobuf crash on Python 3.14
 os.environ["PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION"] = "python"
@@ -86,18 +90,53 @@ _WARNING_BOX = """<div style="background:#fff8e1; border-left:5px solid #f9a825;
   <p style="margin:0; font-size:1em; line-height:1.8;"><strong>⚠️ జాగ్రత్త:</strong> [ఎవరు జాగ్రత్తగా ఉండాలో, ఏ సందర్భంలో వైద్యుడిని వెంటనే కలవాలో సూటిగా రాయి]</p>
 </div>"""
 
-_COMMON_RULES = """ముఖ్యమైన నిబంధనలు:
-1. భాష: పూర్తిగా తెలుగులో రాయి. ఆంగ్ల పదాలు తప్పనిసరైతే మాత్రమే వాడు — తెలుగు లిప్యంతరీకరణలో (example: " డాక్టర్", "హాస్పిటల్").
-2. నిడివి: కనీసం 1800 పదాలు. ప్రతి విభాగాన్ని వివరంగా రాయి.
-3. శైలి — చాలా ముఖ్యం:
-   - పక్కింటి అన్నయ్య లేదా అక్కయ్య మాట్లాడినట్లు సహజంగా రాయి
-   - "నమస్తే", "ఈ వ్యాసంలో", "మీరు తెలుసుకుంటారు" వంటి AI phrases వాడకు
-   - వాక్యాలు చిన్నగా, అర్థమయ్యేలా ఉండాలి
-   - పండిత భాష వద్దు — వంటింట్లో మాట్లాడినట్లు రాయి
-   - నేరుగా విషయంలోకి వెళ్ళు, intro లో time waste వద్దు
-4. AdSense: keyword stuffing చేయకు. అసలైన, నిజమైన సమాచారం రాయి.
-5. అన్ని placeholders ని నిజమైన content తో పూరించు — ఏ placeholder అయినా article లో కనపడకూడదు.
-6. SLUG మాత్రమే మొదటి లైన్‌లో ఇవ్వు — వేరే చోట slug పేర్కొనకు, article లో show అవకూడదు."""
+_COMMON_RULES = """ముఖ్యమైన నిబంధనలు (VERY IMPORTANT):
+1. భాష & శైలి (Natural Mix of Telugu & English terms):
+   - వ్యాసం సరళమైన, స్పష్టమైన, ఆకర్షణీయమైన తెలుగులో ఉండాలి.
+   - ప్రతినిత్యం మాట్లాడేటప్పుడు ఉపయోగించే సాధారణ ఆంగ్ల పదాలను బ్రాకెట్లలో లేదా నేరుగా తెలుగు లిప్యంతరీకరణలో తప్పకుండా వాడండి. ఉదాహరణకు: "అనాజెన్ ఫేజ్ (Anagen Phase)", "టెలోజెన్ ఫేజ్ (Telogen Phase)", "హార్మోన్లు (Hormones)", "హెయిర్ ఫోలికల్స్ (Hair Follicles)", "బ్లడ్ సర్క్యులేషన్ (Blood Circulation)", "డైట్ ప్లాన్ (Diet Plan)", "ఆక్సిజన్ (Oxygen)". దీనివల్ల పాఠకులకు చదవడం చాలా సహజంగా మరియు సులభంగా ఉంటుంది.
+2. డైనమిక్ వ్యాస రూపకల్పన (CRITICAL - Dynamic layouts per topic):
+   - వ్యాసాలన్నీ ఒకే విధమైన రసహీనమైన ఆకృతిలో ఉండకూడదు. టాపిక్‌ను బట్టి వ్యాసం యొక్క నిర్మాణాన్ని మరింత డైనమిక్‌గా మార్చుకోండి.
+   - అవసరమైన చోట ఆహార పట్టికలు (diet tables), పోలిక పట్టికలు (comparison tables), లేదా వారపు షెడ్యూల్స్ (weekly schedules) కోసం అందమైన HTML పట్టికలను (`<table>` ట్యాగ్‌లను) వాడండి.
+   - HTML పట్టికలను కింది శైలిలో అందంగా డిజైన్ చేయండి (ఆకుపచ్చ రంగు థీమ్, ప్యాడింగ్, మరియు బోర్డర్లతో):
+     <table style="width:100%; border-collapse:collapse; margin:20px 0; border:1px solid #e0e0e0; border-radius:8px; overflow:hidden; font-size:15px; text-align:left;">
+       <thead>
+         <tr style="background-color:#2e7d32; color:white;">
+           <th style="padding:12px; font-weight:600;">దశ / పద్ధతి (Stage)</th>
+           <th style="padding:12px; font-weight:600;">వివరణ (Description)</th>
+         </tr>
+       </thead>
+       <tbody>
+         <tr style="border-bottom:1px solid #e0e0e0;">
+           <td style="padding:12px; font-weight:600; color:#2e7d32;">అనాజెన్ ఫేజ్ (Anagen Phase)</td>
+           <td style="padding:12px; color:#444;">ఇది వెంట్రుకలు చురుకుగా పెరిగే పెరుగుదల దశ...</td>
+         </tr>
+         <tr style="background-color:#f9f9f9; border-bottom:1px solid #e0e0e0;">
+           <td style="padding:12px; font-weight:600; color:#2e7d32;">కాటాజెన్ ఫేజ్ (Catagen Phase)</td>
+           <td style="padding:12px; color:#444;">ఈ దశ చాలా తక్కువ సమయం ఉంటుంది, పరివర్తన దశ...</td>
+         </tr>
+       </tbody>
+     </table>
+3. ఫార్మాటింగ్ నియమాలు (CRITICAL - No Raw Markdown):
+   - **ఎట్టి పరిస్థితుల్లోనూ డబుల్ ఆస్టరిస్క్‌లు (** కిరువైపులా) లేదా మార్క్‌డౌన్ హెడర్స్ (#, ##, ###) వాడవద్దు!** ఇవి బ్లాగులో సరిగ్గా కనిపించవు.
+   - బోల్డ్ చేయడానికి కేవలం HTML ట్యాగ్‌లు `<strong>` లేదా `<b>` మాత్రమే వాడండి.
+   - హెడ్డింగ్‌ల కోసం `<h2>`, `<h3>` ట్యాగ్‌లు మాత్రమే వాడండి.
+4. పేరాగ్రాఫ్ మరియు జాబితా ఆకృతి (Separate paragraphs for readability):
+   - ఒకే పెద్ద పేరాగ్రాఫ్‌లో అనేక పాయింట్లు లేదా దశలను (ఉదాహరణకు: 1, 2, 3) కలిపి రాయవద్దు.
+   - ప్రతి పాయింట్ లేదా దశను విడివిడిగా ఒక స్వతంత్ర పేరాగ్రాఫ్ (`<p>` ట్యాగ్) లో లేదా హెడ్డింగ్ మరియు పేరాగ్రాఫ్ రూపంలో రాయాలి. ఉదాహరణకు:
+     <h3>1. అనాజెన్ ఫేజ్ (Anagen Phase - పెరుగుదల దశ):</h3>
+     <p>ఇది వెంట్రుకలు చురుకుగా పెరిగే దశ...</p>
+     <h3>2. కాటాజెన్ ఫేజ్ (Catagen Phase - పరివర్తన దశ):</h3>
+     <p>ఈ దశలో పెరుగుదల ఆగిపోతుంది...</p>
+5. నిడివి: కనీసం 1800 పదాలు. ప్రతి విభాగాన్ని చాలా వివరంగా రాయి.
+6. శైలి — చాలా ముఖ్యం:
+   - పక్కింటి అన్నయ్య లేదా అక్కయ్య మాట్లాడినట్లు సహజంగా రాయి.
+   - "నమస్తే", "ఈ వ్యాసంలో", "మీరు తెలుసుకుంటారు" వంటి కృత్రిమ AI పదబంధాలు వాడకు.
+   - నేరుగా విషయంలోకి వెళ్ళు, పరిచయంలో సమయాన్ని వృధా చేయవద్దు.
+7. ఇమేజ్ ప్లేస్‌హోల్డర్:
+   - మొదటి పేరాగ్రాఫ్ పూర్తయిన వెంటనే ప్రత్యేక లైన్‌లో {{IMAGE_PLACEHOLDER}} అని ఖచ్చితంగా రాయండి. దీనిని పేరాగ్రాఫ్ మధ్యలో లేదా ఏ ఇతర ట్యాగ్‌ల లోపల దాచవద్దు.
+8. AdSense: కీవర్డ్ స్టఫ్ఫింగ్ చేయవద్దు. పాఠకులకు నిజంగా ఉపయోగపడేలా రాయండి.
+9. అన్ని placeholders ని నిజమైన సమాచారంతో పూరించు — ఏ placeholder అయినా ఆర్టికల్‌లో కనపడకూడదు.
+10. SLUG మాత్రమే మొదటి లైన్‌లో ఇవ్వు — వేరే చోట slug పేర్కొనకు, ఆర్టికల్‌లో అది కనిపించకూడదు."""
 
 
 # ---------------------------------------------------------------------------
@@ -574,6 +613,39 @@ def _build_tags(topic: str) -> list:
     return all_tags[:15]  # Blogger supports up to 20 labels
 
 
+def _clean_markdown(content: str) -> str:
+    """Clean up markdown code blocks, bolding, and headings from LLM output."""
+    # Clean up markdown code blocks if present
+    content = re.sub(r"```html\s*", "", content)
+    content = re.sub(r"```\s*$", "", content)
+    content = content.strip()
+    
+    # Automatically convert raw markdown bold (**text**) to HTML strong (<strong>text</strong>)
+    content = re.sub(r"\*\*([^*]+?)\*\*", r"<strong>\1</strong>", content)
+    content = re.sub(r"__([^_]+?)__", r"<strong>\1</strong>", content)
+    
+    # Automatically convert markdown headings (e.g. ### Heading) to HTML headings at the start of lines
+    content = re.sub(r"^\s*###\s+(.*?)\s*#*$", r"<h3>\1</h3>", content, flags=re.MULTILINE)
+    content = re.sub(r"^\s*##\s+(.*?)\s*#*$", r"<h2>\1</h2>", content, flags=re.MULTILINE)
+    content = re.sub(r"^\s*#\s+(.*?)\s*#*$", r"<h1>\1</h1>", content, flags=re.MULTILINE)
+    
+    # Clean up markdown headings that might be wrapped in paragraph tags (e.g. <p>### Heading</p>)
+    content = re.sub(r"<p>\s*###\s+(.*?)\s*</p>", r"<h3>\1</h3>", content, flags=re.IGNORECASE)
+    content = re.sub(r"<p>\s*##\s+(.*?)\s*</p>", r"<h2>\1</h2>", content, flags=re.IGNORECASE)
+    content = re.sub(r"<p>\s*#\s+(.*?)\s*</p>", r"<h1>\1</h1>", content, flags=re.IGNORECASE)
+    
+    # Strip leading/trailing hashes/asterisks inside heading and strong tags
+    content = re.sub(r"(<h[1-6][^>]*>)\s*#+\s*", r"\1", content, flags=re.IGNORECASE)
+    content = re.sub(r"\s*#+\s*(</h[1-6]>)", r"\1", content, flags=re.IGNORECASE)
+    content = re.sub(r"(<strong[^>]*>|<b[^>]*>)\s*\*+\s*", r"\1", content, flags=re.IGNORECASE)
+    content = re.sub(r"\s*\*+\s*(</strong>|</b>)", r"\1", content, flags=re.IGNORECASE)
+    
+    # Clean up any leftover double asterisks entirely just in case
+    content = content.replace("**", "")
+    
+    return content.strip()
+
+
 def generate_article(topic: str, past_urls: list = None) -> dict:
     """
     Generate a full Telugu health article using Gemini AI.
@@ -602,11 +674,7 @@ def generate_article(topic: str, past_urls: list = None) -> dict:
             )
             
             content = response.text
-            
-            # Clean up markdown code blocks if present
-            content = re.sub(r"```html\s*", "", content)
-            content = re.sub(r"```\s*$", "", content)
-            content = content.strip()
+            content = _clean_markdown(content)
             
             # ---------------------------------------------------------------
             # Extract Slug — catch ALL formats the AI might use:
@@ -714,11 +782,7 @@ def generate_article(topic: str, past_urls: list = None) -> dict:
                     max_tokens=5000,
                 )
                 content = chat_completion.choices[0].message.content
-
-                # Clean up markdown code blocks if present
-                content = re.sub(r"```html\s*", "", content)
-                content = re.sub(r"```\s*$",   "", content)
-                content = content.strip()
+                content = _clean_markdown(content)
 
                 # Extract Slug
                 slug = "health-article"
@@ -772,12 +836,37 @@ def generate_article(topic: str, past_urls: list = None) -> dict:
 
 
 def inject_image(body_html: str, image_html: str) -> str:
-    """Inject image HTML after the first paragraph or intro section."""
-    # Try to inject after {{IMAGE_PLACEHOLDER}} marker
-    if "{{IMAGE_PLACEHOLDER}}" in body_html:
-        return body_html.replace("{{IMAGE_PLACEHOLDER}}", image_html)
+    """Inject image HTML after the first paragraph or intro section, replacing all placeholders."""
+    # Find all placeholder matches, case-insensitive, with 1 or 2 braces and optional spaces/hyphens/underscores
+    pattern = re.compile(r"\{{1,2}\s*IMAGE[-_ ]*PLACEHOLDER\s*\}{1,2}", re.IGNORECASE)
     
-    # Try to inject after first </p> tag
+    matches = list(pattern.finditer(body_html))
+    injected = False
+    
+    if matches:
+        # Replace the first matched placeholder with the image_html
+        first_match = matches[0]
+        start, end = first_match.span()
+        body_html = body_html[:start] + image_html + body_html[end:]
+        injected = True
+        
+        # Now remove any other occurrences of the placeholder
+        body_html = pattern.sub("", body_html)
+    else:
+        # If no placeholder with braces was found, check for raw "IMAGE_PLACEHOLDER" text case-insensitively
+        raw_pattern = re.compile(r"\bIMAGE[-_ ]*PLACEHOLDER\b", re.IGNORECASE)
+        raw_matches = list(raw_pattern.finditer(body_html))
+        if raw_matches:
+            first_match = raw_matches[0]
+            start, end = first_match.span()
+            body_html = body_html[:start] + image_html + body_html[end:]
+            injected = True
+            body_html = raw_pattern.sub("", body_html)
+
+    if injected:
+        return body_html
+
+    # Try to inject after first </p> tag if no placeholder was found
     first_p_end = body_html.find("</p>")
     if first_p_end != -1:
         insert_pos = first_p_end + 4

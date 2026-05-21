@@ -98,14 +98,14 @@ jobs:
           git config user.name "AarogyaGuruji Bot"
           git config user.email "bot@aarogyaguruji.com"
           
-          # Check if either tracker or sitemap changed
-          git add data/posted_topics.json sitemap.xml
+          # Check if tracker, sitemap, or used images changed
+          git add data/posted_topics.json sitemap.xml data/used_images.json
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "📝 Auto-published batch and updated sitemap.xml ($(date '+%Y-%m-%d %H:%M IST'))"
+            git commit -m "📝 Auto-published batch, updated sitemap.xml and used_images.json ($(date '+%Y-%m-%d %H:%M IST'))"
             git push origin main
-            echo "✅ Tracker and Sitemap updated and pushed"
+            echo "✅ Tracker, Sitemap and Used Images updated and pushed"
           fi
 
       # ─────────────────────────────────────────────

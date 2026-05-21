@@ -111,6 +111,17 @@ KEYWORD_MAPPING = {
     "మెదడు":      "brain health mental cognitive",
     "పిల్లలు":    "children kids health nutrition",
     "వృద్ధులు":   "elderly senior active healthy",
+    
+    # Grooming & Men's Health
+    "గడ్డం":      "beard growth grooming men",
+    "మీసం":      "moustache beard men style",
+    "గుండు":     "bald head men care",
+    
+    # Common Symptoms & Digestion
+    "నొప్పి":     "massage pain relief joint",
+    "దగ్గు":      "cough cold remedy hot tea",
+    "జీర్ణం":     "healthy stomach digestion food",
+    "గ్యాస్":     "digestive tea herbal organic",
 }
 
 
