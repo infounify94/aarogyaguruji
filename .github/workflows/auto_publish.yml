@@ -90,22 +90,22 @@ jobs:
           PYTHONPATH: 'src'
 
       # ─────────────────────────────────────────────
-      # 7. Commit updated tracker
+      # 7. Commit updated tracker and sitemap
       # ─────────────────────────────────────────────
-      - name: 💾 Update Published Topics Tracker
+      - name: 💾 Update Tracker and Sitemap
         if: always()
         run: |
           git config user.name "AarogyaGuruji Bot"
           git config user.email "bot@aarogyaguruji.com"
           
-          # Check if tracker changed
-          if git diff --quiet data/posted_topics.json; then
-            echo "No new posts to track"
+          # Check if either tracker or sitemap changed
+          git add data/posted_topics.json sitemap.xml
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
           else
-            git add data/posted_topics.json
-            git commit -m "📝 Auto-published $(date '+%Y-%m-%d %H:%M IST') batch"
+            git commit -m "📝 Auto-published batch and updated sitemap.xml ($(date '+%Y-%m-%d %H:%M IST'))"
             git push origin main
-            echo "✅ Tracker updated and pushed"
+            echo "✅ Tracker and Sitemap updated and pushed"
           fi
 
       # ─────────────────────────────────────────────

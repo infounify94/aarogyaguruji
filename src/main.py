@@ -34,6 +34,7 @@ from content_generator import generate_article, inject_image
 from image_fetcher import fetch_image
 from blogger_publisher import publish_post, get_blog_info
 from duplicate_checker import filter_new_topics, mark_as_posted, get_stats
+from sitemap_generator import generate_sitemap
 
 import json
 
@@ -192,6 +193,13 @@ def run_batch():
             log.info(f"  ✗ {f['topic']}: {f['error']}")
     
     log.info("=" * 65)
+    
+    # --- Step 6: Generate Sitemap ---
+    try:
+        log.info("\n🗺️ Generating updated XML sitemap...")
+        generate_sitemap()
+    except Exception as se:
+        log.error(f"❌ Failed to generate sitemap: {se}")
     
     # Exit with error code if all failed
     if failed and not published:
