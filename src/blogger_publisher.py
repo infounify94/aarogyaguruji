@@ -136,9 +136,10 @@ def publish_post(title: str, body_html: str, tags: list = None, draft: bool = Fa
     # If an English slug is provided and we are publishing, use it as the initial title for the URL
     initial_title = english_slug if (english_slug and not draft) else title
     
-    # Inject Schema JSON-LD at the very top of the post body
+    # Inject Schema JSON-LD at the very bottom of the post body to prevent Blogger
+    # from showing the raw JSON code in the post previews on the home page.
     schema_html = _build_schema_json(title, body_html)
-    body_with_schema = schema_html + body_html
+    body_with_schema = body_html + "\n\n" + schema_html
 
     post_body = {
         "kind": "blogger#post",
