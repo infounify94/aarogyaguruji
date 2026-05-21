@@ -7,8 +7,67 @@ and publishes articles to the specified blog.
 No browser interaction needed - uses refresh token only.
 """
 
+import re
 import os
-from google.oauth2.credentials import Credentials
+import json
+from datetime import datetime
+
+
+def _build_schema_json(title: str, body_html: str, url_hint: str = "") -> str:
+    """
+    Build Article + FAQ Schema JSON-LD for Google rich results.
+    FAQ Schema makes questions appear as expandable dropdowns in Google Search.
+    """
+    today = datetime.utcnow().strftime("%Y-%m-%d")
+
+    # Extract FAQ Q&A pairs from the article HTML (our card-style FAQ block)
+    faq_items = []
+    # Match: ► Question text ... answer text
+    qa_pairs = re.findall(
+        r'&#9658;\s*([^<]+)</p>\s*<p[^>]*>([^<]+)</p>',
+        body_html, re.DOTALL
+    )
+    for question, answer in qa_pairs[:5]:  # max 5 FAQ items for Schema
+        q = question.strip()
+        a = re.sub(r'<[^>]+>', '', answer).strip()
+        if q and a and len(q) > 10:
+            faq_items.append({"@type": "Question", "name": q,
+                               "acceptedAnswer": {"@type": "Answer", "text": a}})
+
+    schemas = []
+
+    # Article Schema
+    article_schema = {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": title[:110],
+        "inLanguage": "te",
+        "author": {"@type": "Organization", "name": "AarogyaGuruji",
+                   "url": "https://aarogyaguruji.blogspot.com"},
+        "publisher": {"@type": "Organization", "name": "AarogyaGuruji",
+                      "url": "https://aarogyaguruji.blogspot.com"},
+        "datePublished": today,
+        "dateModified": today,
+    }
+    schemas.append(article_schema)
+
+    # FAQ Schema (only if we found Q&A pairs)
+    if faq_items:
+        faq_schema = {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": faq_items
+        }
+        schemas.append(faq_schema)
+
+    blocks = "".join(
+        f'<script type="application/ld+json">{json.dumps(s, ensure_ascii=False, indent=2)}</script>\n'
+        for s in schemas
+    )
+    return blocks
+
+
+
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
@@ -76,10 +135,14 @@ def publish_post(title: str, body_html: str, tags: list = None, draft: bool = Fa
     # If an English slug is provided and we are publishing, use it as the initial title for the URL
     initial_title = english_slug if (english_slug and not draft) else title
     
+    # Inject Schema JSON-LD at the very top of the post body
+    schema_html = _build_schema_json(title, body_html)
+    body_with_schema = schema_html + body_html
+
     post_body = {
         "kind": "blogger#post",
         "title": initial_title,
-        "content": body_html,
+        "content": body_with_schema,
     }
     
     if tags:
