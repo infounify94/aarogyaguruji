@@ -50,8 +50,466 @@ def _get_model():
         return genai.GenerativeModel(FALLBACK_MODEL)
 
 
+# ---------------------------------------------------------------------------
+# Shared HTML snippets reused across all templates
+# ---------------------------------------------------------------------------
+
+_FAQ_BLOCK = """<h2>తరచుగా అడిగే ప్రశ్నలు</h2>
+<div style="margin:20px 0;">
+  <div style="border-bottom:1px solid #e8e8e8; padding:16px 0;">
+    <p style="margin:0 0 8px; font-weight:600; color:#1b5e20;">&#9658; [పాఠకులు అడిగే సాధారణ సందేహం 1]</p>
+    <p style="margin:0; color:#444; line-height:1.8;">[స్పష్టమైన జవాబు — కనీసం 3-4 వాక్యాలు]</p>
+  </div>
+  <div style="border-bottom:1px solid #e8e8e8; padding:16px 0;">
+    <p style="margin:0 0 8px; font-weight:600; color:#1b5e20;">&#9658; [పాఠకులు అడిగే సాధారణ సందేహం 2]</p>
+    <p style="margin:0; color:#444; line-height:1.8;">[స్పష్టమైన జవాబు — కనీసం 3-4 వాక్యాలు]</p>
+  </div>
+  <div style="border-bottom:1px solid #e8e8e8; padding:16px 0;">
+    <p style="margin:0 0 8px; font-weight:600; color:#1b5e20;">&#9658; [పాఠకులు అడిగే సాధారణ సందేహం 3]</p>
+    <p style="margin:0; color:#444; line-height:1.8;">[స్పష్టమైన జవాబు — కనీసం 3-4 వాక్యాలు]</p>
+  </div>
+  <div style="padding:16px 0;">
+    <p style="margin:0 0 8px; font-weight:600; color:#1b5e20;">&#9658; [పాఠకులు అడిగే సాధారణ సందేహం 4]</p>
+    <p style="margin:0; color:#444; line-height:1.8;">[స్పష్టమైన జవాబు — కనీసం 3-4 వాక్యాలు]</p>
+  </div>
+</div>"""
+
+_DISCLAIMER_BLOCK = """<div style="background:#e3f2fd; border-left:5px solid #1976d2; border-radius:8px; padding:18px 22px; margin:28px 0;">
+  <p style="margin:0; font-size:0.95em; line-height:1.8; color:#1a237e;"><strong>🏥 వైద్య గమనిక:</strong> ఈ వ్యాసంలో అందించిన సమాచారం కేవలం సాధారణ అవగాహన కోసం మాత్రమే. ఇది వృత్తిపరమైన వైద్య సలహాకు ప్రత్యామ్నాయం కాదు. ఏదైనా ఆరోగ్య సమస్య ఉంటే తప్పకుండా అర్హత కలిగిన వైద్యుడిని సంప్రదించండి.</p>
+</div>"""
+
+_TIP_BOX = """<div style="background:#e8f5e9; border-left:5px solid #43a047; border-radius:8px; padding:18px 22px; margin:24px 0;">
+  <p style="margin:0; font-size:1em; line-height:1.8;"><strong>💡 ముఖ్యమైన చిట్కా:</strong> [పాఠకుడు వెంటనే అనుసరించగలిగే ఒక ఆచరణాత్మక చిట్కా రాయి]</p>
+</div>"""
+
+_WARNING_BOX = """<div style="background:#fff8e1; border-left:5px solid #f9a825; border-radius:8px; padding:18px 22px; margin:24px 0;">
+  <p style="margin:0; font-size:1em; line-height:1.8;"><strong>⚠️ జాగ్రత్త:</strong> [ఎవరు జాగ్రత్తగా ఉండాలో, ఏ సందర్భంలో వైద్యుడిని వెంటనే కలవాలో సూటిగా రాయి]</p>
+</div>"""
+
+_COMMON_RULES = """ముఖ్యమైన నిబంధనలు:
+1. భాష: పూర్తిగా తెలుగులో రాయి. ఆంగ్ల పదాలు తప్పనిసరైతే మాత్రమే వాడు — తెలుగు లిప్యంతరీకరణలో (example: " డాక్టర్", "హాస్పిటల్").
+2. నిడివి: కనీసం 1800 పదాలు. ప్రతి విభాగాన్ని వివరంగా రాయి.
+3. శైలి — చాలా ముఖ్యం:
+   - పక్కింటి అన్నయ్య లేదా అక్కయ్య మాట్లాడినట్లు సహజంగా రాయి
+   - "నమస్తే", "ఈ వ్యాసంలో", "మీరు తెలుసుకుంటారు" వంటి AI phrases వాడకు
+   - వాక్యాలు చిన్నగా, అర్థమయ్యేలా ఉండాలి
+   - పండిత భాష వద్దు — వంటింట్లో మాట్లాడినట్లు రాయి
+   - నేరుగా విషయంలోకి వెళ్ళు, intro లో time waste వద్దు
+4. AdSense: keyword stuffing చేయకు. అసలైన, నిజమైన సమాచారం రాయి.
+5. అన్ని placeholders ని నిజమైన content తో పూరించు — ఏ placeholder అయినా article లో కనపడకూడదు.
+6. SLUG మాత్రమే మొదటి లైన్‌లో ఇవ్వు — వేరే చోట slug పేర్కొనకు, article లో show అవకూడదు."""
+
+
+# ---------------------------------------------------------------------------
+# Topic-type detection
+# ---------------------------------------------------------------------------
+
+def _detect_topic_type(topic: str) -> str:
+    """Detect which article template best fits the topic."""
+    t = topic.lower()
+
+    herb_keywords = [
+        "తులసి", "పసుపు", "అశ్వగంధ", "నీమ్", "వేప", "అల్లం", "మేథి", "చింత",
+        "ఆయుర్వేద", "మూలికలు", "ఔషధ", "ఇంటి చిట్కా", "చిట్కాలు", "కషాయం",
+        "నెల్లి", "బ్రహ్మి", "శతావరి", "త్రిఫల", "గిలోయ్", "మోరింగా",
+        "tulsi", "turmeric", "neem", "ginger", "herb"
+    ]
+    nutrition_keywords = [
+        "ఆహారాలు", "ఆహారం", "విటమిన్", "ఐరన్", "కాల్షియం", "ప్రొటీన్",
+        "పోషకాలు", "పోషణ", "సూపర్‌ఫుడ్", "ఫుడ్స్", "డైట్", "తినాలి",
+        "nutrition", "food", "diet", "vitamin", "mineral", "protein"
+    ]
+    women_keywords = [
+        "pcos", "గర్భం", "పీరియడ్స్", "రుతు", "మహిళ", "ఋతుక్రమం",
+        "రొమ్ము", "ప్రెగ్నెన్సీ", "గర్భిణి", "బాలింత", "రజస్వల",
+        "women", "pregnancy", "period", "menstrual"
+    ]
+    disease_keywords = [
+        "డయాబెటిస్", "మధుమేహం", "గుండె", "రక్తపోటు", "bp", "క్యాన్సర్",
+        "కిడ్నీ", "మూత్రపిండాలు", "లివర్", "కాలేయం", "థైరాయిడ్", "అస్తమా",
+        "ఆర్థరైటిస్", "వ్యాధి", "సమస్య", "జ్వరం", "కరోనా", "సంక్రమణ",
+        "diabetes", "cancer", "disease", "disorder", "fever", "infection"
+    ]
+    lifestyle_keywords = [
+        "వ్యాయామం", "యోగా", "నిద్ర", "బరువు", "స్ట్రెస్", "మానసిక",
+        "చర్మం", "జుట్టు", "వేసవి", "శీతాకాలం", "వర్షాకాలం", "సంరక్షణ",
+        "అలవాట్లు", "దినచర్య", "ఫిట్‌నెస్",
+        "yoga", "sleep", "weight", "stress", "skin", "hair", "fitness"
+    ]
+
+    for kw in herb_keywords:
+        if kw in t:
+            return "herb"
+    for kw in women_keywords:
+        if kw in t:
+            return "women"
+    for kw in nutrition_keywords:
+        if kw in t:
+            return "nutrition"
+    for kw in disease_keywords:
+        if kw in t:
+            return "disease"
+    for kw in lifestyle_keywords:
+        if kw in t:
+            return "lifestyle"
+    return "disease"   # sensible default
+
+
+# ---------------------------------------------------------------------------
+# Template 1 — Disease / Condition  🏥
+# ---------------------------------------------------------------------------
+
+def _prompt_disease(topic: str, links_text: str) -> str:
+    return f"""నువ్వు ఒక అనుభవజ్ఞుడైన తెలుగు ఆరోగ్య రచయిత. సాధారణ తెలుగు కుటుంబాలకు అర్థమయ్యే సరళమైన భాషలో రాయాలి.
+
+విషయం: {topic}
+{links_text}
+{_COMMON_RULES}
+
+మొదటి లైన్‌లో తప్పనిసరిగా ఇవ్వు: [SLUG: english-slug-here]
+
+ఇది ఒక వ్యాధి / ఆరోగ్య సమస్య గురించిన వ్యాసం. దిగువ నిర్మాణాన్ని అనుసరించు:
+
+<article>
+
+<h1>[SEO keyword తో ఆకర్షణీయమైన శీర్షిక — 60 అక్షరాల లోపు]</h1>
+
+<p style="font-size:1.1em; line-height:1.9; color:#2d2d2d;">[5-6 వాక్యాల ముందుమాట. ఈ వ్యాధి ఎంత మందిలో వస్తుందో, ఎందుకు శ్రద్ధ అవసరమో వివరించు. పాఠకుడిని వెంటనే ఆకట్టుకో.]</p>
+
+{{IMAGE_PLACEHOLDER}}
+
+<h2>ఈ వ్యాధి అంటే ఏమిటి?</h2>
+<p>[కనీసం 200 పదాలు. వ్యాధి స్వభావం, శరీరంలో ఏం జరుగుతుందో, ఎవరికి ఎక్కువగా వస్తుందో వివరించు.]</p>
+<p>[వ్యాధి రకాలు లేదా దశలు ఉంటే వివరించు. శాస్త్రీయ నేపథ్యం సరళంగా వివరించు.]</p>
+
+<h2>లక్షణాలు ఏమిటి?</h2>
+<p>[100 పదాలు — లక్షణాల గురించి ప్రారంభ వివరణ]</p>
+<ul style="padding-left:22px; line-height:2.1;">
+  <li style="margin-bottom:8px;">✅ [లక్షణం 1 — వివరంగా]</li>
+  <li style="margin-bottom:8px;">✅ [లక్షణం 2 — వివరంగా]</li>
+  <li style="margin-bottom:8px;">✅ [లక్షణం 3 — వివరంగా]</li>
+  <li style="margin-bottom:8px;">✅ [లక్షణం 4 — వివరంగా]</li>
+  <li style="margin-bottom:8px;">✅ [లక్షణం 5 — వివరంగా]</li>
+</ul>
+
+{_WARNING_BOX}
+
+<h2>కారణాలు ఏమిటి?</h2>
+<p>[కనీసం 200 పదాలు. జీవనశైలి, జన్యు, పర్యావరణ కారణాలు వివరంగా రాయి. ఉదాహరణలతో వివరించు.]</p>
+
+<h2>నివారణ మరియు నిర్వహణ</h2>
+<p>[100 పదాలు — ఎందుకు నివారణ సాధ్యమో వివరించు]</p>
+<ol style="padding-left:22px; line-height:1.9;">
+  <li style="margin-bottom:12px;"><strong>[నివారణ చర్య 1]</strong> — [2-3 వాక్యాల వివరణ]</li>
+  <li style="margin-bottom:12px;"><strong>[నివారణ చర్య 2]</strong> — [2-3 వాక్యాల వివరణ]</li>
+  <li style="margin-bottom:12px;"><strong>[నివారణ చర్య 3]</strong> — [2-3 వాక్యాల వివరణ]</li>
+  <li style="margin-bottom:12px;"><strong>[నివారణ చర్య 4]</strong> — [2-3 వాక్యాల వివరణ]</li>
+  <li style="margin-bottom:12px;"><strong>[నివారణ చర్య 5]</strong> — [2-3 వాక్యాల వివరణ]</li>
+</ol>
+
+{_TIP_BOX}
+
+<h2>డాక్టర్‌ను ఎప్పుడు కలవాలి?</h2>
+<p>[కనీసం 150 పదాలు. ఏ లక్షణాలు వస్తే వెంటనే వైద్యుడిని కలవాలో స్పష్టంగా చెప్పు. ఏ పరీక్షలు చేయించుకోవాలో సూచించు.]</p>
+
+{_FAQ_BLOCK}
+
+<h2>ముగింపు</h2>
+<p>[100-120 పదాలు. ముఖ్య అంశాలు సంక్షిప్తంగా గుర్తుచేసి పాఠకుడిని ధైర్యపరచు.]</p>
+
+{_DISCLAIMER_BLOCK}
+
+</article>
+
+ఇప్పుడు పూర్తి వ్యాసాన్ని రాయడం ప్రారంభించు:"""
+
+
+# ---------------------------------------------------------------------------
+# Template 2 — Nutrition / Foods  🥗
+# ---------------------------------------------------------------------------
+
+def _prompt_nutrition(topic: str, links_text: str) -> str:
+    return f"""నువ్వు ఒక అనుభవజ్ఞుడైన తెలుగు ఆహార శాస్త్ర రచయిత. సాధారణ తెలుగు కుటుంబాలకు అర్థమయ్యే సరళమైన భాషలో రాయాలి.
+
+విషయం: {topic}
+{links_text}
+{_COMMON_RULES}
+
+మొదటి లైన్‌లో తప్పనిసరిగా ఇవ్వు: [SLUG: english-slug-here]
+
+ఇది పోషణ / ఆహారాలకు సంబంధించిన వ్యాసం. దిగువ నిర్మాణాన్ని అనుసరించు:
+
+<article>
+
+<h1>[SEO keyword తో ఆకర్షణీయమైన శీర్షిక — 60 అక్షరాల లోపు]</h1>
+
+<p style="font-size:1.1em; line-height:1.9; color:#2d2d2d;">[5-6 వాక్యాల ముందుమాట. ఈ పోషకం / ఆహారం ఎందుకు ముఖ్యమో, దాని లోపం వల్ల ఏం జరుగుతుందో వివరించు.]</p>
+
+{{IMAGE_PLACEHOLDER}}
+
+<h2>ఇది మన శరీరానికి ఎందుకు అవసరం?</h2>
+<p>[కనీసం 200 పదాలు. శరీరంలో ఈ పోషకం పాత్ర ఏమిటో, లోపం వల్ల ఏ సమస్యలు వస్తాయో వివరించు.]</p>
+<p>[రోజువారీ అవసరమైన పరిమాణం, వయస్సు వారీగా తేడా వివరించు.]</p>
+
+<h2>ఈ పోషకం అధికంగా ఉన్న ఆహారాలు</h2>
+<p>[100 పదాలు — పరిచయం]</p>
+
+<div style="overflow-x:auto; margin:24px 0;">
+  <table style="width:100%; border-collapse:collapse; font-family:inherit; font-size:0.97em; border-radius:10px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+    <thead>
+      <tr style="background:linear-gradient(90deg,#1b5e20,#388e3c); color:#fff;">
+        <th style="padding:13px 16px; text-align:left; font-weight:600;">ఆహారం</th>
+        <th style="padding:13px 16px; text-align:left; font-weight:600;">పోషకం పరిమాణం</th>
+        <th style="padding:13px 16px; text-align:left; font-weight:600;">అదనపు లాభం</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="background:#f1f8e9;"><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[ఆహారం 1]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[పరిమాణం]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[లాభం]</td></tr>
+      <tr style="background:#fff;"><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[ఆహారం 2]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[పరిమాణం]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[లాభం]</td></tr>
+      <tr style="background:#f1f8e9;"><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[ఆహారం 3]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[పరిమాణం]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[లాభం]</td></tr>
+      <tr style="background:#fff;"><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[ఆహారం 4]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[పరిమాణం]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[లాభం]</td></tr>
+      <tr style="background:#f1f8e9;"><td style="padding:11px 16px;">[ఆహారం 5]</td><td style="padding:11px 16px;">[పరిమాణం]</td><td style="padding:11px 16px;">[లాభం]</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<p>[పైన జాబితా చేసిన ప్రతి ఆహారం గురించి 2-3 వాక్యాలు రాయి — దాని ప్రత్యేకత ఏమిటి, ఎలా తినాలి.]</p>
+
+{_TIP_BOX}
+
+<h2>రోజువారీ ఆహారంలో ఎలా చేర్చాలి?</h2>
+<p>[కనీసం 150 పదాలు — ఆచరణాత్మక సలహాలు]</p>
+<ul style="padding-left:22px; line-height:2;">
+  <li>[ఉదయం ఆహారంలో చేర్చే విధం]</li>
+  <li>[మధ్యాహ్నం ఆహారంలో చేర్చే విధం]</li>
+  <li>[రాత్రి ఆహారంలో చేర్చే విధం]</li>
+  <li>[వంట చేసే తీరు — పోషకాలు నష్టపోకుండా]</li>
+</ul>
+
+{_WARNING_BOX}
+
+{_FAQ_BLOCK}
+
+<h2>ముగింపు</h2>
+<p>[100-120 పదాలు. చిన్న మార్పులు పెద్ద తేడా తెస్తాయని ఉత్సాహంగా చెప్పు.]</p>
+
+{_DISCLAIMER_BLOCK}
+
+</article>
+
+ఇప్పుడు పూర్తి వ్యాసాన్ని రాయడం ప్రారంభించు:"""
+
+
+# ---------------------------------------------------------------------------
+# Template 3 — Herb / Home Remedy  🌿
+# ---------------------------------------------------------------------------
+
+def _prompt_herb(topic: str, links_text: str) -> str:
+    return f"""నువ్వు ఒక అనుభవజ్ఞుడైన తెలుగు ఆయుర్వేద రచయిత. సాధారణ తెలుగు కుటుంబాలకు అర్థమయ్యే సరళమైన భాషలో రాయాలి.
+
+విషయం: {topic}
+{links_text}
+{_COMMON_RULES}
+
+మొదటి లైన్‌లో తప్పనిసరిగా ఇవ్వు: [SLUG: english-slug-here]
+
+ఇది ఆయుర్వేద మూలిక / ఇంటి చిట్కాకు సంబంధించిన వ్యాసం. దిగువ నిర్మాణాన్ని అనుసరించు:
+
+<article>
+
+<h1>[SEO keyword తో ఆకర్షణీయమైన శీర్షిక — 60 అక్షరాల లోపు]</h1>
+
+<p style="font-size:1.1em; line-height:1.9; color:#2d2d2d;">[5-6 వాక్యాల ముందుమాట. ఈ మూలిక భారతీయ వంటింట్లో ఎంత ముఖ్యమో, ఎందుకు తరతరాలుగా ఉపయోగిస్తున్నారో వివరించు.]</p>
+
+{{IMAGE_PLACEHOLDER}}
+
+<h2>ఆయుర్వేదంలో ప్రాముఖ్యత</h2>
+<p>[కనీసం 200 పదాలు. చరక సంహిత, అథర్వ వేదం లేదా సుశ్రుత సంహితలో ఈ మూలిక గురించి ఏమి చెప్పారో సూచించు. చారిత్రక, సాంస్కృతిక నేపథ్యం వివరించు.]</p>
+
+<h2>ముఖ్యమైన ఔషధ గుణాలు</h2>
+<p>[100 పదాలు — ఏ రసాయన సమ్మేళనాలు ఉన్నాయో సరళంగా వివరించు]</p>
+<ul style="padding-left:22px; line-height:2.1;">
+  <li style="margin-bottom:8px;">🌿 <strong>[గుణం 1]</strong> — [వివరణ]</li>
+  <li style="margin-bottom:8px;">🌿 <strong>[గుణం 2]</strong> — [వివరణ]</li>
+  <li style="margin-bottom:8px;">🌿 <strong>[గుణం 3]</strong> — [వివరణ]</li>
+  <li style="margin-bottom:8px;">🌿 <strong>[గుణం 4]</strong> — [వివరణ]</li>
+</ul>
+
+<h2>ఎలా తయారు చేయాలి / ఎలా వాడాలి?</h2>
+<p>[100 పదాలు — ఎందుకు సరైన తయారీ ముఖ్యమో వివరించు]</p>
+<ol style="padding-left:22px; line-height:1.9;">
+  <li style="margin-bottom:12px;">[దశ 1 — వివరంగా]</li>
+  <li style="margin-bottom:12px;">[దశ 2 — వివరంగా]</li>
+  <li style="margin-bottom:12px;">[దశ 3 — వివరంగా]</li>
+  <li style="margin-bottom:12px;">[దశ 4 — వివరంగా]</li>
+</ol>
+
+<div style="overflow-x:auto; margin:24px 0;">
+  <table style="width:100%; border-collapse:collapse; font-family:inherit; font-size:0.97em; border-radius:10px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+    <thead>
+      <tr style="background:linear-gradient(90deg,#1b5e20,#388e3c); color:#fff;">
+        <th style="padding:13px 16px; text-align:left; font-weight:600;">వాడే విధం</th>
+        <th style="padding:13px 16px; text-align:left; font-weight:600;">పరిమాణం</th>
+        <th style="padding:13px 16px; text-align:left; font-weight:600;">ఎవరికి ఉపయోగం</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="background:#f1f8e9;"><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[విధం 1]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[పరిమాణం]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[ఉపయోగం]</td></tr>
+      <tr style="background:#fff;"><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[విధం 2]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[పరిమాణం]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[ఉపయోగం]</td></tr>
+      <tr style="background:#f1f8e9;"><td style="padding:11px 16px;">[విధం 3]</td><td style="padding:11px 16px;">[పరిమాణం]</td><td style="padding:11px 16px;">[ఉపయోగం]</td></tr>
+    </tbody>
+  </table>
+</div>
+
+{_TIP_BOX}
+
+{_WARNING_BOX}
+
+{_FAQ_BLOCK}
+
+<h2>ముగింపు</h2>
+<p>[100-120 పదాలు. ప్రకృతి మనకు ఇచ్చిన ఈ వరాన్ని సరిగ్గా ఉపయోగించుకోమని ఉత్సాహంగా చెప్పు.]</p>
+
+{_DISCLAIMER_BLOCK}
+
+</article>
+
+ఇప్పుడు పూర్తి వ్యాసాన్ని రాయడం ప్రారంభించు:"""
+
+
+# ---------------------------------------------------------------------------
+# Template 4 — Lifestyle / Fitness  💪
+# ---------------------------------------------------------------------------
+
+def _prompt_lifestyle(topic: str, links_text: str) -> str:
+    return f"""నువ్వు ఒక అనుభవజ్ఞుడైన తెలుగు ఆరోగ్య జీవనశైలి రచయిత. సాధారణ తెలుగు కుటుంబాలకు అర్థమయ్యే సరళమైన భాషలో రాయాలి.
+
+విషయం: {topic}
+{links_text}
+{_COMMON_RULES}
+
+మొదటి లైన్‌లో తప్పనిసరిగా ఇవ్వు: [SLUG: english-slug-here]
+
+ఇది జీవనశైలి / ఆరోగ్య అలవాట్లకు సంబంధించిన వ్యాసం. దిగువ నిర్మాణాన్ని అనుసరించు:
+
+<article>
+
+<h1>[SEO keyword తో ఆకర్షణీయమైన శీర్షిక — 60 అక్షరాల లోపు]</h1>
+
+<p style="font-size:1.1em; line-height:1.9; color:#2d2d2d;">[5-6 వాక్యాల ముందుమాట. చాలా మంది ఈ విషయంలో ఎందుకు చిన్న మార్పు కూడా చేయలేకపోతున్నారో, ఇది నేర్చుకుంటే ఎంత మేలో వివరించు.]</p>
+
+{{IMAGE_PLACEHOLDER}}
+
+<h2>చాలా మంది చేసే సాధారణ తప్పులు</h2>
+<p>[కనీసం 200 పదాలు. నిజాయితీగా, ఆసక్తికరంగా రాయి. పాఠకుడు "అవును ఇది నేనే చేస్తున్నాను" అనుకునేలా రాయి.]</p>
+
+<h2>సరైన విధానం ఏమిటి?</h2>
+<p>[కనీసం 200 పదాలు. శాస్త్రీయ ఆధారాలతో, సరళంగా వివరించు.]</p>
+
+<h2>రోజువారీ దినచర్యలో మార్పులు — అడుగు అడుగుగా</h2>
+<p>[100 పదాలు — ఈ మార్పులు ఎందుకు సాధ్యమో వివరించు]</p>
+<ol style="padding-left:22px; line-height:1.9;">
+  <li style="margin-bottom:16px;"><strong>[మార్పు 1]</strong><br>[3-4 వాక్యాలు — ఎందుకు ముఖ్యమో, ఎలా మొదలుపెట్టాలో వివరించు]</li>
+  <li style="margin-bottom:16px;"><strong>[మార్పు 2]</strong><br>[3-4 వాక్యాలు]</li>
+  <li style="margin-bottom:16px;"><strong>[మార్పు 3]</strong><br>[3-4 వాక్యాలు]</li>
+  <li style="margin-bottom:16px;"><strong>[మార్పు 4]</strong><br>[3-4 వాక్యాలు]</li>
+  <li style="margin-bottom:16px;"><strong>[మార్పు 5]</strong><br>[3-4 వాక్యాలు]</li>
+</ol>
+
+{_TIP_BOX}
+
+<h2>ఇవి తప్పకుండా గుర్తుంచుకో</h2>
+<ul style="padding-left:22px; line-height:2.1;">
+  <li style="margin-bottom:8px;">📌 [గుర్తుంచుకోవాల్సిన విషయం 1]</li>
+  <li style="margin-bottom:8px;">📌 [గుర్తుంచుకోవాల్సిన విషయం 2]</li>
+  <li style="margin-bottom:8px;">📌 [గుర్తుంచుకోవాల్సిన విషయం 3]</li>
+  <li style="margin-bottom:8px;">📌 [గుర్తుంచుకోవాల్సిన విషయం 4]</li>
+</ul>
+
+{_WARNING_BOX}
+
+{_FAQ_BLOCK}
+
+<h2>ముగింపు</h2>
+<p>[100-120 పదాలు. చిన్న మొదలే పెద్ద విజయం — పాఠకుడిని ఉత్సాహంగా చేర్చు.]</p>
+
+{_DISCLAIMER_BLOCK}
+
+</article>
+
+ఇప్పుడు పూర్తి వ్యాసాన్ని రాయడం ప్రారంభించు:"""
+
+
+# ---------------------------------------------------------------------------
+# Template 5 — Women's Health  👩
+# ---------------------------------------------------------------------------
+
+def _prompt_women(topic: str, links_text: str) -> str:
+    return f"""నువ్వు ఒక అనుభవజ్ఞుడైన తెలుగు మహిళల ఆరోగ్య రచయిత. ఆప్యాయంగా, అర్థమయ్యే సరళమైన భాషలో రాయాలి.
+
+విషయం: {topic}
+{links_text}
+{_COMMON_RULES}
+
+మొదటి లైన్‌లో తప్పనిసరిగా ఇవ్వు: [SLUG: english-slug-here]
+
+ఇది మహిళల ఆరోగ్యానికి సంబంధించిన వ్యాసం. ఆప్యాయంగా, నమ్మకంగా రాయి. దిగువ నిర్మాణాన్ని అనుసరించు:
+
+<article>
+
+<h1>[SEO keyword తో ఆకర్షణీయమైన శీర్షిక — 60 అక్షరాల లోపు]</h1>
+
+<p style="font-size:1.1em; line-height:1.9; color:#2d2d2d;">[5-6 వాక్యాల ఆప్యాయమైన ముందుమాట. చాలా మంది మహిళలు ఈ సమస్యను మౌనంగా భరిస్తారని, ఇది సహజమే కానీ దీని గురించి మాట్లాడటం ముఖ్యమని చెప్పు.]</p>
+
+{{IMAGE_PLACEHOLDER}}
+
+<h2>ఇది అంటే ఏమిటి?</h2>
+<p>[కనీసం 200 పదాలు. స్పష్టంగా, అర్థమయ్యే భాషలో వివరించు. శాస్త్రీయ వివరణను సరళంగా చెప్పు.]</p>
+
+<h2>లక్షణాలు మరియు సంకేతాలు</h2>
+<p>[100 పదాలు — ఎందుకు లక్షణాలను గుర్తించడం ముఖ్యమో వివరించు]</p>
+<ul style="padding-left:22px; line-height:2.1;">
+  <li style="margin-bottom:8px;">🔴 [లక్షణం 1 — వివరంగా]</li>
+  <li style="margin-bottom:8px;">🔴 [లక్షణం 2 — వివరంగా]</li>
+  <li style="margin-bottom:8px;">🔴 [లక్షణం 3 — వివరంగా]</li>
+  <li style="margin-bottom:8px;">🔴 [లక్షణం 4 — వివరంగా]</li>
+  <li style="margin-bottom:8px;">🔴 [లక్షణం 5 — వివరంగా]</li>
+</ul>
+
+<h2>సహజ నివారణ మరియు నిర్వహణ</h2>
+<p>[కనీసం 200 పదాలు — ఆహారం, జీవనశైలి, ఒత్తిడి నిర్వహణ వివరంగా రాయి]</p>
+<ol style="padding-left:22px; line-height:1.9;">
+  <li style="margin-bottom:12px;"><strong>[చర్య 1]</strong> — [2-3 వాక్యాలు]</li>
+  <li style="margin-bottom:12px;"><strong>[చర్య 2]</strong> — [2-3 వాక్యాలు]</li>
+  <li style="margin-bottom:12px;"><strong>[చర్య 3]</strong> — [2-3 వాక్యాలు]</li>
+  <li style="margin-bottom:12px;"><strong>[చర్య 4]</strong> — [2-3 వాక్యాలు]</li>
+</ol>
+
+{_TIP_BOX}
+
+{_WARNING_BOX}
+
+<h2>వైద్యుడిని ఎప్పుడు కలవాలి?</h2>
+<p>[కనీసం 150 పదాలు. ఏ సంకేతాలు వస్తే వెంటనే వైద్యుడిని కలవాలో స్పష్టంగా చెప్పు. ముందుగా కలవడం వల్ల ఎంత మేలో వివరించు.]</p>
+
+{_FAQ_BLOCK}
+
+<h2>ముగింపు</h2>
+<p>[100-120 పదాలు. నీ ఆరోగ్యం నీ చేతిలోనే ఉందని, సకాలంలో శ్రద్ధ తీసుకోమని ఆప్యాయంగా చెప్పు.]</p>
+
+{_DISCLAIMER_BLOCK}
+
+</article>
+
+ఇప్పుడు పూర్తి వ్యాసాన్ని రాయడం ప్రారంభించు:"""
+
+
+# ---------------------------------------------------------------------------
+# Main router — picks the right template based on topic
+# ---------------------------------------------------------------------------
+
 def _build_article_prompt(topic: str, past_urls: list = None) -> str:
-    """Build the AdSense-ready, reader-friendly article generation prompt."""
+    """Route to the correct template based on detected topic type."""
 
     links_text = ""
     if past_urls:
@@ -59,135 +517,17 @@ def _build_article_prompt(topic: str, past_urls: list = None) -> str:
         for url_info in past_urls:
             links_text += f"- {url_info['title']}: {url_info['url']}\n"
 
-    return f"""నువ్వు ఒక అనుభవజ్ఞుడైన తెలుగు ఆరోగ్య రచయిత. నీ పాఠకులు సాధారణ తెలుగు కుటుంబాలు. వారికి అర్థమయ్యే సరళమైన తెలుగులో రాయాలి.
-
-విషయం: {topic}
-{links_text}
-
-ముఖ్యమైన నిబంధనలు:
-1. భాష: పూర్తిగా తెలుగులో రాయి. ఆంగ్ల పదాలు అవసరమైతే తెలుగు లిప్యంతరీకరణలో రాయి.
-2. నిడివి: కనీసం 1800 నుండి 2500 పదాలు ఉండాలి. ప్రతి విభాగాన్ని చాలా వివరంగా, లోతుగా వివరించు.
-3. శైలి: 100% సహజంగా, మనిషి రాసినట్లు, సంభాషణ శైలిలో రాయి. నాటకీయమైన AI greetings వాడకు. నేరుగా విషయంలోకి వెళ్ళు.
-4. ఆయుర్వేద: ఈ విషయం ఆయుర్వేద / ఔషధ మొక్కలు / ఇంటి చిట్కాలకు సంబంధించినదైతే మాత్రమే ఆయుర్వేద విభాగం చేర్చు. మిగతా అన్ని అంశాలకు (వ్యాయామం, పోషణ, వ్యాధులు, మహిళల ఆరోగ్యం మొదలైనవి) ఆయుర్వేద విభాగం చేర్చవద్దు — బదులుగా ఆ స్థానంలో ఆచరణాత్మక జీవనశైలి చిట్కాల విభాగం రాయి.
-5. AdSense నిబంధనలు: కీవర్డ్ స్టఫింగ్ చేయకు, అసలైన విలువైన సమాచారం మాత్రమే రాయి.
-
-మొదటి లైన్‌లో తప్పనిసరిగా URL slug ఇవ్వు:
-[SLUG: english-topic-slug-with-hyphens]
-
-HTMLఫార్మాట్ (దీన్ని ఉపయోగించి పూర్తి వ్యాసం రాయి — అన్ని placeholders ని అసలు కంటెంట్‌తో పూరించు):
-
-<article>
-
-<h1>[SEO ముఖ్యపదాలు ఉన్న ఆకర్షణీయమైన శీర్షిక - 60 అక్షరాల లోపు]</h1>
-
-<p style="font-size:1.1em; line-height:1.9; color:#2d2d2d;">[5-6 వాక్యాల బలమైన ముందుమాట. పాఠకుడిని వెంటనే ఆకట్టుకోవాలి. ఈ అంశం ఎందుకు ముఖ్యమో వివరించు.]</p>
-
-{{IMAGE_PLACEHOLDER}}
-
-<h2>[మొదటి విభాగం: మూల అంశం / పరిచయం]</h2>
-<p>[కనీసం 250 పదాలతో వివరంగా రాయి. చరిత్ర, శాస్త్రీయ నేపథ్యం, ఎందుకు ముఖ్యమో వివరించు.]</p>
-<p>[ఈ అంశంపై పాఠకుడికి పూర్తి అవగాహన కలిగించే అదనపు సమాచారం.]</p>
-
-<h2>[రెండవ విభాగం: ముఖ్య లాభాలు / ఉపయోగాలు]</h2>
-<p>[కనీసం 200 పదాలతో లాభాలను వివరించు.]</p>
-
-<!-- పోషక విలువలు లేదా ముఖ్య అంశాల పోలిక పట్టిక -->
-<div style="overflow-x:auto; margin:24px 0;">
-  <table style="width:100%; border-collapse:collapse; font-family:inherit; font-size:0.97em; border-radius:10px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-    <thead>
-      <tr style="background:linear-gradient(90deg,#1b5e20,#388e3c); color:#fff;">
-        <th style="padding:13px 16px; text-align:left; font-weight:600;">[కాలమ్ 1 పేరు]</th>
-        <th style="padding:13px 16px; text-align:left; font-weight:600;">[కాలమ్ 2 పేరు]</th>
-        <th style="padding:13px 16px; text-align:left; font-weight:600;">[కాలమ్ 3 పేరు]</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr style="background:#f1f8e9;">
-        <td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[విలువ 1]</td>
-        <td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[విలువ 2]</td>
-        <td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[విలువ 3]</td>
-      </tr>
-      <tr style="background:#fff;">
-        <td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[విలువ 4]</td>
-        <td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[విలువ 5]</td>
-        <td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[విలువ 6]</td>
-      </tr>
-      <tr style="background:#f1f8e9;">
-        <td style="padding:11px 16px;">[విలువ 7]</td>
-        <td style="padding:11px 16px;">[విలువ 8]</td>
-        <td style="padding:11px 16px;">[విలువ 9]</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-<h2>[మూడవ విభాగం: ఎలా ఉపయోగించాలి / మోతాదు]</h2>
-<p>[కనీసం 200 పదాలతో వివరంగా రాయి. ఎలా వాడాలో, ఏ మోతాదులో వాడాలో స్పష్టంగా రాయి.]</p>
-<ul style="padding-left:22px; line-height:2;">
-  <li>[వివరమైన పాయింట్ 1]</li>
-  <li>[వివరమైన పాయింట్ 2]</li>
-  <li>[వివరమైన పాయింట్ 3]</li>
-  <li>[వివరమైన పాయింట్ 4]</li>
-</ul>
-
-<!-- చిట్కా బాక్స్ -->
-<div style="background:#e8f5e9; border-left:5px solid #43a047; border-radius:8px; padding:18px 22px; margin:24px 0;">
-  <p style="margin:0; font-size:1em; line-height:1.8;"><strong>💡 ఆరోగ్య చిట్కా:</strong> [ఒక ముఖ్యమైన, ఆచరణాత్మక చిట్కా రాయి — పాఠకుడు వెంటనే అనుసరించగలిగేది.]</p>
-</div>
-
-<h2>[నాలుగవ విభాగం: టాపిక్ ని బట్టి రాయి]
-
-ఈ టాపిక్ ఆయుర్వేదం / ఔషధ మొక్కలు / ఇంటి చిట్కాలకు సంబంధించినదైతే:
-→ <h2>ఆయుర్వేద దృక్పథం</h2> విభాగం రాయి — కనీసం 200 పదాలు, ప్రాచీన గ్రంథాలు సూచించు.
-
-ఆయుర్వేదంతో సంబంధం లేని టాపిక్ అయితే (వ్యాధులు, వ్యాయామం, పోషణ, మహిళల ఆరోగ్యం మొదలైనవి):
-→ <h2>రోజువారీ జీవనశైలిలో మార్పులు</h2> విభాగం రాయి — కనీసం 200 పదాలు, ఆచరణాత్మక సలహాలు, అలవాట్లు, ఏమి తినాలి/ఏమి చేయాలి వంటివి రాయి.]</h2>
-<p>[ఆ విభాగాన్ని కనీసం 200 పదాలతో వివరంగా రాయి.]</p>
-
-<!-- హెచ్చరిక బాక్స్ -->
-<div style="background:#fff8e1; border-left:5px solid #f9a825; border-radius:8px; padding:18px 22px; margin:24px 0;">
-  <p style="margin:0; font-size:1em; line-height:1.8;"><strong>⚠️ జాగ్రత్త:</strong> [ఎవరు వాడకూడదో, ఏ సందర్భంలో జాగ్రత్త అవసరమో సూటిగా రాయి.]</p>
-</div>
-
-<h2>తరచుగా అడిగే ప్రశ్నలు</h2>
-
-<div style="margin:20px 0;">
-  <div style="border-bottom:1px solid #e8e8e8; padding:16px 0;">
-    <p style="margin:0 0 8px; font-weight:600; color:#1b5e20;">&#9658; [పాఠకులు అడిగే సాధారణ సందేహం 1]</p>
-    <p style="margin:0; color:#444; line-height:1.8;">[స్పష్టమైన, వివరమైన జవాబు — కనీసం 3-4 వాక్యాలు]</p>
-  </div>
-  <div style="border-bottom:1px solid #e8e8e8; padding:16px 0;">
-    <p style="margin:0 0 8px; font-weight:600; color:#1b5e20;">&#9658; [పాఠకులు అడిగే సాధారణ సందేహం 2]</p>
-    <p style="margin:0; color:#444; line-height:1.8;">[స్పష్టమైన, వివరమైన జవాబు — కనీసం 3-4 వాక్యాలు]</p>
-  </div>
-  <div style="border-bottom:1px solid #e8e8e8; padding:16px 0;">
-    <p style="margin:0 0 8px; font-weight:600; color:#1b5e20;">&#9658; [పాఠకులు అడిగే సాధారణ సందేహం 3]</p>
-    <p style="margin:0; color:#444; line-height:1.8;">[స్పష్టమైన, వివరమైన జవాబు — కనీసం 3-4 వాక్యాలు]</p>
-  </div>
-  <div style="padding:16px 0;">
-    <p style="margin:0 0 8px; font-weight:600; color:#1b5e20;">&#9658; [పాఠకులు అడిగే సాధారణ సందేహం 4]</p>
-    <p style="margin:0; color:#444; line-height:1.8;">[స్పష్టమైన, వివరమైన జవాబు — కనీసం 3-4 వాక్యాలు]</p>
-  </div>
-</div>
-
-<h2>ముగింపు</h2>
-<p>[100-150 పదాలతో బలమైన ముగింపు రాయి. ముఖ్యమైన విషయాలను సంక్షిప్తంగా గుర్తుచేసి, పాఠకుడిని ఉత్సాహపరచు.]</p>
-
-<!-- వైద్య నిరాకరణ -->
-<div style="background:#e3f2fd; border-left:5px solid #1976d2; border-radius:8px; padding:18px 22px; margin:28px 0;">
-  <p style="margin:0; font-size:0.95em; line-height:1.8; color:#1a237e;"><strong>🏥 వైద్య గమనిక:</strong> ఈ వ్యాసంలో అందించిన సమాచారం కేవలం సాధారణ అవగాహన కోసం మాత్రమే. ఇది వృత్తిపరమైన వైద్య సలహాకు ప్రత్యామ్నాయం కాదు. ఏదైనా ఆరోగ్య సమస్య ఉంటే తప్పకుండా అర్హత కలిగిన వైద్యుడిని సంప్రదించండి.</p>
-</div>
-
-</article>
-
-ముఖ్యమైన సూచనలు:
-- పై నిర్మాణంలో అన్ని placeholders ని topic కి సంబంధించిన అసలు కంటెంట్‌తో పూరించు.
-- పట్టికలో వాస్తవమైన పోషక/వైద్య విలువలు రాయి (ఉదా: పోషకాంశం, మోతాదు, ప్రయోజనం).
-- చిట్కా బాక్స్‌లో ఒక ఆచరణాత్మక, వెంటనే అమలు చేయగలిగే సలహా రాయి.
-- వ్యాసాన్ని కనీసం 1800 పదాలతో పూర్తి చేయి.
-
-ఇప్పుడు పూర్తి, AdSense-ready వ్యాసాన్ని రాయడం ప్రారంభించు:"""
-
+    topic_type = _detect_topic_type(topic)
+    template_map = {
+        "disease":   _prompt_disease,
+        "nutrition": _prompt_nutrition,
+        "herb":      _prompt_herb,
+        "lifestyle": _prompt_lifestyle,
+        "women":     _prompt_women,
+    }
+    builder = template_map.get(topic_type, _prompt_disease)
+    print(f"📋 Article template: {topic_type.upper()} → {topic}")
+    return builder(topic, links_text)
 
 def _extract_title(html_content: str) -> str:
     """Extract title from H1 tag."""
@@ -268,13 +608,31 @@ def generate_article(topic: str, past_urls: list = None) -> dict:
             content = re.sub(r"```\s*$", "", content)
             content = content.strip()
             
-            # Extract Slug
+            # ---------------------------------------------------------------
+            # Extract Slug — catch ALL formats the AI might use:
+            #   [SLUG: some-slug]  /  English Topic Slug: some-slug
+            #   **Slug:** some-slug  /  slug: some-slug  (inside any tag)
+            # ---------------------------------------------------------------
             slug = "health-article"
-            slug_match = re.search(r"\[SLUG:\s*([^\]]+)\]", content)
-            if slug_match:
-                slug = slug_match.group(1).strip().lower().replace(" ", "-")
-                # Remove the slug line from content
-                content = content.replace(slug_match.group(0), "").strip()
+            slug_patterns = [
+                r"\[SLUG:\s*([^\]\n]+)\]",                          # [SLUG: slug]
+                r"(?:English\s+Topic\s+)?Slug:\s*([a-z0-9][a-z0-9\-]*)",  # English Topic Slug: slug
+                r"slug[:\s]+([a-z0-9][a-z0-9\-]{3,60})",             # slug: slug (lowercase)
+            ]
+            for pat in slug_patterns:
+                m = re.search(pat, content, re.IGNORECASE)
+                if m:
+                    slug = m.group(1).strip().lower().replace(" ", "-")
+                    break
+
+            # Aggressively strip ALL slug-related lines from the content
+            # (handles plain text, inside headings, bold, etc.)
+            content = re.sub(r"\[SLUG:[^\]]*\]", "", content)
+            content = re.sub(
+                r"(<[^>]*>)?\s*(?:English\s+Topic\s+)?Slug:\s*[a-z0-9][a-z0-9\-]*\s*(</[^>]*>)?",
+                "", content, flags=re.IGNORECASE
+            )
+            content = content.strip()
             
             # Extract title
             title = _extract_title(content)
