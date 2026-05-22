@@ -460,11 +460,14 @@ def get_trending_from_newsdata(count: int = 20) -> list:
     
     try:
         url = "https://newsdata.io/api/1/news"
+        lang_env = os.getenv("LANGUAGE", "telugu")
+        api_lang = "hi,en" if lang_env.lower() == "hindi" else "te,en"
+        
         params = {
             "apikey": NEWSDATA_API_KEY,
             "q": "health OR ayurveda OR yoga OR nutrition",
             "country": "in",
-            "language": "te,en",
+            "language": api_lang,
             "category": "health",
         }
         resp = requests.get(url, params=params, timeout=15)

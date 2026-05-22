@@ -1,0 +1,130 @@
+name: AarogyaGuruji - Auto Publish Hindi Health Articles
+
+on:
+  # Run 2 times daily at 6AM and 6PM IST
+  schedule:
+    - cron: '30 0 * * *'   # 06:00 AM IST (00:30 UTC) - Will publish 2 articles
+    - cron: '30 12 * * *'  # 06:00 PM IST (12:30 UTC) - Will publish 3 articles
+  
+  # Allow manual trigger from GitHub UI
+  workflow_dispatch:
+    inputs:
+      articles_count:
+        description: 'Number of articles to publish (default: 3)'
+        required: false
+        default: '3'
+
+jobs:
+  publish-articles-hindi:
+    runs-on: ubuntu-latest
+    
+    # Prevent multiple runs at same time
+    concurrency:
+      group: publish-articles-hindi
+      cancel-in-progress: false
+    
+    steps:
+      # ─────────────────────────────────────────────
+      # 1. Checkout repository
+      # ─────────────────────────────────────────────
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 1
+
+      # ─────────────────────────────────────────────
+      # 2. Setup Python
+      # ─────────────────────────────────────────────
+      - name: 🐍 Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      # ─────────────────────────────────────────────
+      # 3. Install Dependencies
+      # ─────────────────────────────────────────────
+      - name: 📦 Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # ─────────────────────────────────────────────
+      # 4. Configure Environment
+      # ─────────────────────────────────────────────
+      - name: ⚙️ Configure Environment
+        run: |
+          echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> $GITHUB_ENV
+          echo "GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}" >> $GITHUB_ENV
+          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> $GITHUB_ENV
+          echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> $GITHUB_ENV
+          echo "GOOGLE_REFRESH_TOKEN=${{ secrets.GOOGLE_REFRESH_TOKEN }}" >> $GITHUB_ENV
+          echo "PEXELS_API_KEY=${{ secrets.PEXELS_API_KEY }}" >> $GITHUB_ENV
+          echo "NEWSDATA_API_KEY=${{ secrets.NEWSDATA_API_KEY }}" >> $GITHUB_ENV
+          echo "BLOG_ID=${{ secrets.BLOG_ID }}" >> $GITHUB_ENV
+          
+          # Dynamic article count based on schedule
+          if [ "${{ github.event.schedule }}" == "30 0 * * *" ]; then
+            echo "ARTICLES_PER_RUN=2" >> $GITHUB_ENV
+          elif [ "${{ github.event.schedule }}" == "30 12 * * *" ]; then
+            echo "ARTICLES_PER_RUN=3" >> $GITHUB_ENV
+          else
+            echo "ARTICLES_PER_RUN=${{ github.event.inputs.articles_count || '3' }}" >> $GITHUB_ENV
+          fi
+
+      # ─────────────────────────────────────────────
+      # 5. Pull latest data (avoid conflicts)
+      # ─────────────────────────────────────────────
+      - name: 🔄 Pull Latest Changes
+        run: |
+          git config user.name "AarogyaGuruji Bot"
+          git config user.email "bot@aarogyaguruji.com"
+          git pull --rebase origin main || git pull origin main
+
+      # ─────────────────────────────────────────────
+      # 6. Run the Hindi publisher
+      # ─────────────────────────────────────────────
+      - name: 🚀 Publish Hindi Articles
+        run: |
+          python src/hindi_main.py
+        env:
+          PYTHONUNBUFFERED: '1'
+          PYTHONPATH: 'src'
+
+      # ─────────────────────────────────────────────
+      # 7. Commit updated tracker and sitemap
+      # ─────────────────────────────────────────────
+      - name: 💾 Update Tracker and Sitemap
+        if: always()
+        run: |
+          git config user.name "AarogyaGuruji Bot"
+          git config user.email "bot@aarogyaguruji.com"
+          
+          # Check if Hindi tracker, sitemap, or used images changed
+          git add data/posted_topics_hindi.json sitemap.xml data/used_images.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "📝 Auto-published Hindi batch, updated sitemap.xml and trackers ($(date '+%Y-%m-%d %H:%M IST'))"
+            git push origin main
+            echo "✅ Trackers, Sitemap and Used Images updated and pushed"
+          fi
+
+      # ─────────────────────────────────────────────
+      # 8. Output summary
+      # ─────────────────────────────────────────────
+      - name: 📊 Run Summary
+        if: always()
+        run: |
+          echo "## 📊 AarogyaGuruji HINDI Publishing Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Date**: $(date '+%Y-%m-%d %H:%M IST')" >> $GITHUB_STEP_SUMMARY
+          echo "**Blog ID**: ${{ env.BLOG_ID }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Articles Run Target**: ${{ env.ARTICLES_PER_RUN }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -f data/posted_topics_hindi.json ]; then
+            TOTAL=$(python -c "import json; d=json.load(open('data/posted_topics_hindi.json')); print(d.get('total_posts', 0))")
+            echo "**Total Hindi posts ever**: $TOTAL" >> $GITHUB_STEP_SUMMARY
+          fi

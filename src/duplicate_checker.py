@@ -10,9 +10,12 @@ import json
 import hashlib
 import re
 from datetime import datetime, timedelta
+import os
 from pathlib import Path
 
-DATA_FILE = Path(__file__).parent.parent / "data" / "posted_topics.json"
+# Use TRACKER_FILE env var if set, otherwise default to posted_topics.json
+_tracker_filename = os.getenv("TRACKER_FILE", "posted_topics.json")
+DATA_FILE = Path(__file__).parent.parent / "data" / _tracker_filename
 COOLDOWN_DAYS = 45  # Days before a topic can be reposted
 
 

@@ -1,10 +1,10 @@
 """
 content_generator.py
 ====================
-Generates Telugu health articles using Google Gemini AI.
+Generates Hindi health articles using Google Gemini AI.
 
 Features:
-- 1800-2500 word articles in simple, everyday Telugu
+- 1800-2500 word articles in simple, everyday Hindi
 - AdSense-friendly HTML structure (clean, no keyword stuffing)
 - Styled tables, tip boxes, and info boxes for reader engagement
 - Ayurveda content referenced from Atharva Veda and ancient texts
@@ -58,85 +58,73 @@ def _get_model():
 # Shared HTML snippets reused across all templates
 # ---------------------------------------------------------------------------
 
-_FAQ_BLOCK = """<h2>తరచుగా అడిగే ప్రశ్నలు</h2>
+_FAQ_BLOCK = """<h2>अक्सर पूछे जाने वाले प्रश्न (FAQ)</h2>
 <div style="margin:20px 0;">
   <div style="border-bottom:1px solid #e8e8e8; padding:16px 0;">
-    <p style="margin:0 0 8px; font-weight:600; color:#1b5e20;">&#9658; [పాఠకులు అడిగే సాధారణ సందేహం 1]</p>
-    <p style="margin:0; color:#444; line-height:1.8;">[స్పష్టమైన జవాబు — కనీసం 3-4 వాక్యాలు]</p>
+    <p style="margin:0 0 8px; font-weight:600; color:#1b5e20;">&#9658; [पाठकों द्वारा पूछा जाने वाला सामान्य प्रश्न 1]</p>
+    <p style="margin:0; color:#444; line-height:1.8;">[स्पष्ट उत्तर — कम से कम 3-4 वाक्य]</p>
   </div>
   <div style="border-bottom:1px solid #e8e8e8; padding:16px 0;">
-    <p style="margin:0 0 8px; font-weight:600; color:#1b5e20;">&#9658; [పాఠకులు అడిగే సాధారణ సందేహం 2]</p>
-    <p style="margin:0; color:#444; line-height:1.8;">[స్పష్టమైన జవాబు — కనీసం 3-4 వాక్యాలు]</p>
+    <p style="margin:0 0 8px; font-weight:600; color:#1b5e20;">&#9658; [पाठकों द्वारा पूछा जाने वाला सामान्य प्रश्न 2]</p>
+    <p style="margin:0; color:#444; line-height:1.8;">[स्पष्ट उत्तर — कम से कम 3-4 वाक्य]</p>
   </div>
   <div style="border-bottom:1px solid #e8e8e8; padding:16px 0;">
-    <p style="margin:0 0 8px; font-weight:600; color:#1b5e20;">&#9658; [పాఠకులు అడిగే సాధారణ సందేహం 3]</p>
-    <p style="margin:0; color:#444; line-height:1.8;">[స్పష్టమైన జవాబు — కనీసం 3-4 వాక్యాలు]</p>
-  </div>
-  <div style="padding:16px 0;">
-    <p style="margin:0 0 8px; font-weight:600; color:#1b5e20;">&#9658; [పాఠకులు అడిగే సాధారణ సందేహం 4]</p>
-    <p style="margin:0; color:#444; line-height:1.8;">[స్పష్టమైన జవాబు — కనీసం 3-4 వాక్యాలు]</p>
+    <p style="margin:0 0 8px; font-weight:600; color:#1b5e20;">&#9658; [पाठकों द्वारा पूछा जाने वाला सामान्य प्रश्न 3]</p>
+    <p style="margin:0; color:#444; line-height:1.8;">[स्पष्ट उत्तर — कम से कम 3-4 वाक्य]</p>
   </div>
 </div>"""
 
 _DISCLAIMER_BLOCK = """<div style="background:#e3f2fd; border-left:5px solid #1976d2; border-radius:8px; padding:18px 22px; margin:28px 0;">
-  <p style="margin:0; font-size:0.95em; line-height:1.8; color:#1a237e;"><strong>🏥 వైద్య గమనిక:</strong> ఈ వ్యాసంలో అందించిన సమాచారం కేవలం సాధారణ అవగాహన కోసం మాత్రమే. ఇది వృత్తిపరమైన వైద్య సలహాకు ప్రత్యామ్నాయం కాదు. ఏదైనా ఆరోగ్య సమస్య ఉంటే తప్పకుండా అర్హత కలిగిన వైద్యుడిని సంప్రదించండి.</p>
+  <p style="margin:0; font-size:0.95em; line-height:1.8; color:#1a237e;"><strong>🏥 मेडिकल अस्वीकरण:</strong> इस लेख में दी गई जानकारी केवल सामान्य जागरूकता के लिए है। यह पेशेवर चिकित्सा सलाह का विकल्प नहीं है। किसी भी स्वास्थ्य समस्या के मामले में, कृपया हमेशा एक योग्य डॉक्टर से परामर्श लें।</p>
 </div>"""
 
 _TIP_BOX = """<div style="background:#e8f5e9; border-left:5px solid #43a047; border-radius:8px; padding:18px 22px; margin:24px 0;">
-  <p style="margin:0; font-size:1em; line-height:1.8;"><strong>💡 ముఖ్యమైన చిట్కా:</strong> [పాఠకుడు వెంటనే అనుసరించగలిగే ఒక ఆచరణాత్మక చిట్కా రాయి]</p>
+  <p style="margin:0; font-size:1em; line-height:1.8;"><strong>💡 महत्वपूर्ण टिप:</strong> [एक व्यावहारिक टिप जिसे पाठक तुरंत अपना सकें]</p>
 </div>"""
 
 _WARNING_BOX = """<div style="background:#fff8e1; border-left:5px solid #f9a825; border-radius:8px; padding:18px 22px; margin:24px 0;">
-  <p style="margin:0; font-size:1em; line-height:1.8;"><strong>⚠️ జాగ్రత్త:</strong> [ఎవరు జాగ్రత్తగా ఉండాలో, ఏ సందర్భంలో వైద్యుడిని వెంటనే కలవాలో సూటిగా రాయి]</p>
+  <p style="margin:0; font-size:1em; line-height:1.8;"><strong>⚠️ सावधानी:</strong> [यहाँ स्पष्ट रूप से बताएं कि किसे सावधान रहना चाहिए या डॉक्टर से कब मिलना चाहिए]</p>
 </div>"""
 
-_COMMON_RULES = """ముఖ్యమైన నిబంధనలు (VERY IMPORTANT):
-1. భాష & శైలి (Natural Mix of Telugu & English terms):
-   - వ్యాసం సరళమైన, స్పష్టమైన, ఆకర్షణీయమైన తెలుగులో ఉండాలి.
-   - ప్రతినిత్యం మాట్లాడేటప్పుడు ఉపయోగించే సాధారణ ఆంగ్ల పదాలను బ్రాకెట్లలో లేదా నేరుగా తెలుగు లిప్యంతరీకరణలో తప్పకుండా వాడండి. ఉదాహరణకు: "అనాజెన్ ఫేజ్ (Anagen Phase)", "టెలోజెన్ ఫేజ్ (Telogen Phase)", "హార్మోన్లు (Hormones)", "హెయిర్ ఫోలికల్స్ (Hair Follicles)", "బ్లడ్ సర్క్యులేషన్ (Blood Circulation)", "డైట్ ప్లాన్ (Diet Plan)", "ఆక్సిజన్ (Oxygen)". దీనివల్ల పాఠకులకు చదవడం చాలా సహజంగా మరియు సులభంగా ఉంటుంది.
-2. డైనమిక్ వ్యాస రూపకల్పన (CRITICAL - Dynamic layouts per topic):
-   - వ్యాసాలన్నీ ఒకే విధమైన రసహీనమైన ఆకృతిలో ఉండకూడదు. టాపిక్‌ను బట్టి వ్యాసం యొక్క నిర్మాణాన్ని మరింత డైనమిక్‌గా మార్చుకోండి.
-   - అవసరమైన చోట ఆహార పట్టికలు (diet tables), పోలిక పట్టికలు (comparison tables), లేదా వారపు షెడ్యూల్స్ (weekly schedules) కోసం అందమైన HTML పట్టికలను (`<table>` ట్యాగ్‌లను) వాడండి.
-   - HTML పట్టికలను కింది శైలిలో అందంగా డిజైన్ చేయండి (ఆకుపచ్చ రంగు థీమ్, ప్యాడింగ్, మరియు బోర్డర్లతో):
+_COMMON_RULES = """महत्वपूर्ण नियम (VERY IMPORTANT):
+1. भाषा और शैली (Natural Mix of Hindi & English terms):
+   - लेख सरल, स्पष्ट और आकर्षक हिंदी में होना चाहिए।
+   - रोज़मर्रा की बातचीत में इस्तेमाल होने वाले सामान्य अंग्रेज़ी शब्दों का प्रयोग ब्रैकेट में या सीधे हिंदी लिप्यंतरण (transliteration) में अवश्य करें। उदाहरण के लिए: "एनाजेन फेज (Anagen Phase)", "हार्मोन (Hormones)", "हेयर फॉलिकल्स (Hair Follicles)", "ब्लड सर्कुलेशन (Blood Circulation)", "डाइट प्लान (Diet Plan)", "ऑक्सीजन (Oxygen)"। इससे पाठकों को पढ़ने में बहुत सहजता होगी।
+2. डायनामिक लेख संरचना (CRITICAL - Dynamic layouts per topic):
+   - सभी लेख एक जैसे उबाऊ लेआउट में नहीं होने चाहिए। विषय के अनुसार लेआउट को डायनामिक बनाएं।
+   - आवश्यकतानुसार डाइट टेबल्स, तुलना तालिकाओं (comparison tables), या साप्ताहिक शेड्यूल (weekly schedules) के लिए सुंदर HTML तालिकाओं (`<table>` टैग्स) का उपयोग करें।
+   - HTML तालिकाओं को नीचे दी गई शैली में सुंदर ढंग से डिज़ाइन करें (हरे रंग की थीम, पैडिंग और बॉर्डर के साथ):
      <table style="width:100%; border-collapse:collapse; margin:20px 0; border:1px solid #e0e0e0; border-radius:8px; overflow:hidden; font-size:15px; text-align:left;">
        <thead>
          <tr style="background-color:#2e7d32; color:white;">
-           <th style="padding:12px; font-weight:600;">దశ / పద్ధతి (Stage)</th>
-           <th style="padding:12px; font-weight:600;">వివరణ (Description)</th>
+           <th style="padding:12px; font-weight:600;">चरण / विधि (Stage)</th>
+           <th style="padding:12px; font-weight:600;">विवरण (Description)</th>
          </tr>
        </thead>
        <tbody>
          <tr style="border-bottom:1px solid #e0e0e0;">
-           <td style="padding:12px; font-weight:600; color:#2e7d32;">అనాజెన్ ఫేజ్ (Anagen Phase)</td>
-           <td style="padding:12px; color:#444;">ఇది వెంట్రుకలు చురుకుగా పెరిగే పెరుగుదల దశ...</td>
-         </tr>
-         <tr style="background-color:#f9f9f9; border-bottom:1px solid #e0e0e0;">
-           <td style="padding:12px; font-weight:600; color:#2e7d32;">కాటాజెన్ ఫేజ్ (Catagen Phase)</td>
-           <td style="padding:12px; color:#444;">ఈ దశ చాలా తక్కువ సమయం ఉంటుంది, పరివర్తన దశ...</td>
+           <td style="padding:12px; font-weight:600; color:#2e7d32;">एनाजेन फेज (Anagen Phase)</td>
+           <td style="padding:12px; color:#444;">यह बालों के सक्रिय रूप से बढ़ने का चरण है...</td>
          </tr>
        </tbody>
      </table>
-3. ఫార్మాటింగ్ నియమాలు (CRITICAL - No Raw Markdown):
-   - **ఎట్టి పరిస్థితుల్లోనూ డబుల్ ఆస్టరిస్క్‌లు (** కిరువైపులా) లేదా మార్క్‌డౌన్ హెడర్స్ (#, ##, ###) వాడవద్దు!** ఇవి బ్లాగులో సరిగ్గా కనిపించవు.
-   - బోల్డ్ చేయడానికి కేవలం HTML ట్యాగ్‌లు `<strong>` లేదా `<b>` మాత్రమే వాడండి.
-   - హెడ్డింగ్‌ల కోసం `<h2>`, `<h3>` ట్యాగ్‌లు మాత్రమే వాడండి.
-4. పేరాగ్రాఫ్ మరియు జాబితా ఆకృతి (Separate paragraphs for readability):
-   - ఒకే పెద్ద పేరాగ్రాఫ్‌లో అనేక పాయింట్లు లేదా దశలను (ఉదాహరణకు: 1, 2, 3) కలిపి రాయవద్దు.
-   - ప్రతి పాయింట్ లేదా దశను విడివిడిగా ఒక స్వతంత్ర పేరాగ్రాఫ్ (`<p>` ట్యాగ్) లో లేదా హెడ్డింగ్ మరియు పేరాగ్రాఫ్ రూపంలో రాయాలి. ఉదాహరణకు:
-     <h3>1. అనాజెన్ ఫేజ్ (Anagen Phase - పెరుగుదల దశ):</h3>
-     <p>ఇది వెంట్రుకలు చురుకుగా పెరిగే దశ...</p>
-     <h3>2. కాటాజెన్ ఫేజ్ (Catagen Phase - పరివర్తన దశ):</h3>
-     <p>ఈ దశలో పెరుగుదల ఆగిపోతుంది...</p>
-5. నిడివి: కనీసం 1800 పదాలు. ప్రతి విభాగాన్ని చాలా వివరంగా రాయి.
-6. శైలి — చాలా ముఖ్యం:
-   - పక్కింటి అన్నయ్య లేదా అక్కయ్య మాట్లాడినట్లు సహజంగా రాయి.
-   - "నమస్తే", "ఈ వ్యాసంలో", "మీరు తెలుసుకుంటారు" వంటి కృత్రిమ AI పదబంధాలు వాడకు.
-   - నేరుగా విషయంలోకి వెళ్ళు, పరిచయంలో సమయాన్ని వృధా చేయవద్దు.
-7. ఇమేజ్ ప్లేస్‌హోల్డర్:
-   - మొదటి పేరాగ్రాఫ్ పూర్తయిన వెంటనే ప్రత్యేక లైన్‌లో {{IMAGE_PLACEHOLDER}} అని ఖచ్చితంగా రాయండి. దీనిని పేరాగ్రాఫ్ మధ్యలో లేదా ఏ ఇతర ట్యాగ్‌ల లోపల దాచవద్దు.
-8. AdSense: కీవర్డ్ స్టఫ్ఫింగ్ చేయవద్దు. పాఠకులకు నిజంగా ఉపయోగపడేలా రాయండి.
-9. అన్ని placeholders ని నిజమైన సమాచారంతో పూరించు — ఏ placeholder అయినా ఆర్టికల్‌లో కనపడకూడదు.
-10. SLUG మాత్రమే మొదటి లైన్‌లో ఇవ్వు — వేరే చోట slug పేర్కొనకు, ఆర్టికల్‌లో అది కనిపించకూడదు."""
+3. स्वरूपण नियम (CRITICAL - No Raw Markdown):
+   - **किसी भी परिस्थिति में डबल एस्टरिस्क (** दोनों तरफ) या मार्कडाउन हेडर (#, ##, ###) का उपयोग न करें!** ये ब्लॉग पर ठीक से नहीं दिखते हैं।
+   - बोल्ड करने के लिए केवल HTML टैग्स `<strong>` या `<b>` का ही उपयोग करें।
+   - शीर्षकों (headings) के लिए केवल `<h2>`, `<h3>` टैग्स का उपयोग करें।
+4. पैराग्राफ और सूची प्रारूप (Separate paragraphs for readability):
+   - एक ही बड़े पैराग्राफ में कई बिंदु या चरण (जैसे: 1, 2, 3) मिलाकर न लिखें।
+   - प्रत्येक बिंदु या चरण को अलग से एक स्वतंत्र पैराग्राफ (`<p>` टैग) में या शीर्षक और पैराग्राफ के रूप में लिखें।
+5. लंबाई: कम से कम 1800 शब्द। प्रत्येक अनुभाग (section) को बहुत विस्तार से लिखें।
+6. शैली — बहुत महत्वपूर्ण:
+   - ऐसे लिखें जैसे पड़ोस का कोई भाई या बहन बात कर रहा हो।
+   - "नमस्ते", "इस लेख में", "आप जानेंगे" जैसे कृत्रिम AI वाक्यांशों का उपयोग न करें।
+   - सीधे विषय पर आएं, परिचय में समय बर्बाद न करें।
+7. इमेज प्लेसहोल्डर:
+   - पहला पैराग्राफ पूरा होने के तुरंत बाद एक नई लाइन में {{IMAGE_PLACEHOLDER}} अवश्य लिखें। इसे पैराग्राफ के बीच में या किसी अन्य टैग के अंदर न छिपाएं।
+8. AdSense: कीवर्ड स्टफिंग न करें। पाठकों के लिए वास्तव में उपयोगी होने के लिए लिखें।
+9. सभी प्लेसहोल्डर्स को वास्तविक जानकारी से भरें — कोई भी प्लेसहोल्डर लेख में दिखाई नहीं देना चाहिए।
+10. SLUG केवल पहली लाइन में दें — लेख में कहीं और स्लग का उल्लेख न करें।"""
 
 
 # ---------------------------------------------------------------------------
@@ -199,7 +187,7 @@ def _detect_topic_type(topic: str) -> str:
 # ---------------------------------------------------------------------------
 
 def _prompt_disease(topic: str, links_text: str) -> str:
-    return f"""నువ్వు ఒక అనుభవజ్ఞుడైన తెలుగు ఆరోగ్య రచయిత. సాధారణ తెలుగు కుటుంబాలకు అర్థమయ్యే సరళమైన భాషలో రాయాలి.
+    return f"""నువ్వు ఒక అనుభవజ్ఞుడైన हिंदी स्वास्थ्य लेखक (Hindi Health Writer). సాధారణ తెలుగు కుటుంబాలకు అర్థమయ్యే సరళమైన భాషలో రాయాలి.
 
 విషయం: {topic}
 {links_text}
@@ -534,7 +522,7 @@ def _prompt_women(topic: str, links_text: str) -> str:
 {_FAQ_BLOCK}
 
 <h2>ముగింపు</h2>
-<p>[100-120 పదాలు. నీ ఆరోగ్యం నీ చేతిలోనే ఉందని, సకాలంలో శ్రద్ధ తీసుకోమని ఆప్యాయంగా చెప్పు.]</p>
+<p>[100-120 పదాలు. నీ स्वास्थ्य (Health) నీ చేతిలోనే ఉందని, సకాలంలో శ్రద్ధ తీసుకోమని ఆప్యాయంగా చెప్పు.]</p>
 
 {_DISCLAIMER_BLOCK}
 
@@ -579,29 +567,29 @@ def _extract_title(html_content: str) -> str:
 
 def _build_tags(topic: str) -> list:
     """Generate relevant Blogger tags/labels."""
-    base_tags = ["ఆరోగ్యం", "Telugu Health", "AarogyaGuruji"]
+    base_tags = ["Hindi", "AarogyaGuruji"]
     
     tag_map = {
-        "ఆయుర్వేద": ["ఆయుర్వేదం", "Ayurveda", "వేద వైద్యం"],
-        "అయుర్వేద": ["ఆయుర్వేదం", "Ayurveda"],
-        "డయాబెటిస్": ["మధుమేహం", "Diabetes", "చక్కెర వ్యాధి"],
-        "మధుమేహం": ["మధుమేహం", "Diabetes"],
-        "గుండె": ["గుండె ఆరోగ్యం", "Heart Health"],
-        "రక్తపోటు": ["BP", "Blood Pressure", "రక్తపోటు"],
-        "కిడ్నీ": ["మూత్రపిండాలు", "Kidney Health"],
-        "లివర్": ["కాలేయం", "Liver Health"],
-        "క్యాన్సర్": ["క్యాన్సర్", "Cancer Awareness"],
-        "యోగ": ["యోగా", "Yoga", "వ్యాయామం"],
-        "మానసిక": ["మానసిక ఆరోగ్యం", "Mental Health"],
-        "ఆహారం": ["పోషణ", "Nutrition", "ఆహారం"],
-        "చర్మం": ["చర్మ సంరక్షణ", "Skin Care"],
-        "జుట్టు": ["జుట్టు సంరక్షణ", "Hair Care"],
-        "నిద్ర": ["నిద్ర ఆరోగ్యం", "Sleep Health"],
-        "PCOS": ["PCOS", "మహిళల ఆరోగ్యం", "Women Health"],
-        "బరువు": ["బరువు తగ్గించడం", "Weight Loss"],
-        "ఇమ్యూనిటీ": ["రోగ నిరోధకత", "Immunity"],
-        "తులసి": ["ఔషధ మొక్కలు", "Herbs", "ఇంటి చిట్కాలు"],
-        "పసుపు": ["ఔషధ మొక్కలు", "Herbs"],
+        "ఆయుర్వేద": ["आयुर्वेद", "Ayurveda"],
+        "అయుర్వేద": ["आयुर्वेद", "Ayurveda"],
+        "డయాబెటిస్": ["मधुमेह", "Diabetes"],
+        "మధుమేహం": ["मधुमेह", "Diabetes"],
+        "గుండె": ["हृदय स्वास्थ्य", "Heart Health"],
+        "రక్తపోటు": ["BP", "Blood Pressure", "रक्तचाप"],
+        "కిడ్నీ": ["किडनी स्वास्थ्य", "Kidney Health"],
+        "లివర్": ["लिवर स्वास्थ्य", "Liver Health"],
+        "క్యాన్సర్": ["कैंसर", "Cancer Awareness"],
+        "యోగ": ["योग", "Yoga", "व्यायाम"],
+        "మానసిక": ["मानसिक स्वास्थ्य", "Mental Health"],
+        "ఆహారం": ["पोषण", "Nutrition", "आहार"],
+        "చర్మం": ["स्किन केयर", "Skin Care"],
+        "జుట్టు": ["हेयर केयर", "Hair Care"],
+        "నిద్ర": ["नींद का स्वास्थ्य", "Sleep Health"],
+        "PCOS": ["PCOS", "महिला स्वास्थ्य", "Women Health"],
+        "బరువు": ["वजन घटाना", "Weight Loss"],
+        "ఇమ్యూనిటీ": ["इम्युनिटी", "Immunity"],
+        "తులసి": ["जड़ी-बूटियां", "Herbs", "घरेलू नुस्खे"],
+        "పసుపు": ["जड़ी-बूटियां", "Herbs"],
     }
     
     extra_tags = []
@@ -648,7 +636,7 @@ def _clean_markdown(content: str) -> str:
 
 def generate_article(topic: str, past_urls: list = None) -> dict:
     """
-    Generate a full Telugu health article using Gemini AI.
+    Generate a full Hindi health article using Gemini AI.
     
     Returns:
         dict with keys: title, slug, body_html, tags, meta_description, topic
@@ -706,7 +694,7 @@ def generate_article(topic: str, past_urls: list = None) -> dict:
             if slug in invalid_slugs or not slug:
                 try:
                     # Fallback: Ask Gemini to just translate the topic to a slug
-                    slug_prompt = f"Translate this Telugu health topic to a short English URL slug (lowercase, hyphens only, no numbers if possible, 3-6 words). Topic: '{topic}'. Output ONLY the slug."
+                    slug_prompt = f"Translate this Hindi health topic to a short English URL slug (lowercase, hyphens only, no numbers if possible, 3-6 words). Topic: '{topic}'. Output ONLY the slug."
                     slug_response = model.generate_content(slug_prompt)
                     fallback_slug = slug_response.text.strip().lower()
                     fallback_slug = re.sub(r'[^a-z0-9\s-]', '', fallback_slug)
@@ -778,7 +766,7 @@ def generate_article(topic: str, past_urls: list = None) -> dict:
     
     # --- Groq Fallback Chain ---
     # Fallback 1: llama-4-scout-17b (500K tokens/day — best daily budget)
-    # Fallback 2: llama-3.3-70b-versatile (100K tokens/day — best Telugu quality)
+    # Fallback 2: llama-3.3-70b-versatile (100K tokens/day — best Hindi quality)
     GROQ_MODELS = [
         ("meta-llama/llama-4-scout-17b-16e-instruct", "Llama 4 Scout 17B"),
         ("llama-3.3-70b-versatile",                   "Llama 3.3 70B Versatile"),
@@ -789,7 +777,7 @@ def generate_article(topic: str, past_urls: list = None) -> dict:
         raise Exception(f"Failed to generate article for '{topic}' using both Gemini and Groq.")
 
     groq_system = (
-        "You are an expert Telugu health writer. "
+        "You are an expert Hindi health writer. "
         "Follow all HTML formatting instructions exactly. "
         "Generate long, detailed, AdSense-ready articles with tables, "
         "tip boxes, and info boxes as instructed."

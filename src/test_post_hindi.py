@@ -31,7 +31,8 @@ from dotenv import load_dotenv
 env_path = Path(__file__).parent.parent / ".env"
 load_dotenv(env_path)
 
-from content_generator import generate_article, inject_image
+import discover_topics
+import hindi_content_generator as content_generator
 from image_fetcher import fetch_image
 from blogger_publisher import get_blog_info, publish_post
 from duplicate_checker import mark_as_posted
@@ -54,7 +55,7 @@ def get_past_urls(count: int = 5) -> list:
         return []
 
 # Test article topic
-TEST_TOPIC = "వేసవిలో శరీర ఉష్ణోగ్రత తగ్గించే 5 సహజ మార్గాలు"
+TEST_TOPIC = "मधुमेह के कारण और घरेलू उपाय"
 
 # Blog ID
 BLOG_ID = os.getenv("BLOG_ID", "707690830658262263")
@@ -62,7 +63,7 @@ BLOG_ID = os.getenv("BLOG_ID", "707690830658262263")
 
 def run_test():
     print("=" * 65)
-    print("  AarogyaGuruji - Test Post Publisher")
+    print("  AarogyaGuruji - Test Post Publisher (HINDI)")
     print("=" * 65)
     print()
     
@@ -89,7 +90,7 @@ def run_test():
     print(f"   Topic: {TEST_TOPIC}")
     try:
         past_urls = get_past_urls(count=5)
-        article = generate_article(TEST_TOPIC, past_urls=past_urls)
+        article = content_generator.generate_article(TEST_TOPIC, past_urls=past_urls)
         print(f"   ✅ Generated: '{article['title']}'")
         print(f"   📝 Length: {len(article['body_html'])} chars")
         print(f"   🏷️  Tags: {', '.join(article['tags'][:5])}...")
@@ -107,7 +108,7 @@ def run_test():
         print(f"   📸 By: {image['photographer']}")
         
         # Inject image into article
-        final_html = inject_image(article["body_html"], image["html"])
+        final_html = content_generator.inject_image(article["body_html"], image["html"])
     except Exception as e:
         print(f"   ⚠️  Image fetch failed (using article without image): {e}")
         final_html = article["body_html"]
