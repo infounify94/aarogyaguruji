@@ -187,68 +187,68 @@ def _detect_topic_type(topic: str) -> str:
 # ---------------------------------------------------------------------------
 
 def _prompt_disease(topic: str, links_text: str) -> str:
-    return f"""నువ్వు ఒక అనుభవజ్ఞుడైన हिंदी स्वास्थ्य लेखक (Hindi Health Writer). సాధారణ తెలుగు కుటుంబాలకు అర్థమయ్యే సరళమైన భాషలో రాయాలి.
+    return f"""You are an experienced Hindi Health Writer. Write the ENTIRE ARTICLE ONLY IN HINDI language (Devanagari script) in a simple, conversational tone.
 
-విషయం: {topic}
+Topic: {topic}
 {links_text}
 {_COMMON_RULES}
 
-మొదటి లైన్‌లో తప్పనిసరిగా ఇవ్వు: [SLUG: write-topic-name-in-english-words-with-hyphens] (ఉదాహరణకు: [SLUG: health-benefits-of-tulasi])
+First line must be: [SLUG: write-topic-name-in-english-words-with-hyphens] (Example: [SLUG: health-benefits-of-tulasi])
 
-ఇది ఒక వ్యాధి / ఆరోగ్య సమస్య గురించిన వ్యాసం. దిగువ నిర్మాణాన్ని అనుసరించు:
+This is an article about a disease / health condition. Follow the structure below exactly:
 
 <article>
 
-<h1>[SEO keyword తో ఆకర్షణీయమైన శీర్షిక — 60 అక్షరాల లోపు]</h1>
+<h1>[Catchy Title with SEO keyword — under 60 chars (in Hindi)]</h1>
 
-<p style="font-size:1.1em; line-height:1.9; color:#2d2d2d;">[5-6 వాక్యాల ముందుమాట. ఈ వ్యాధి ఎంత మందిలో వస్తుందో, ఎందుకు శ్రద్ధ అవసరమో వివరించు. పాఠకుడిని వెంటనే ఆకట్టుకో.]</p>
+<p style="font-size:1.1em; line-height:1.9; color:#2d2d2d;">[5-6 sentences introduction. Explain how common the disease is and why attention is needed.]</p>
 
 {{IMAGE_PLACEHOLDER}}
 
-<h2>ఈ వ్యాధి అంటే ఏమిటి?</h2>
-<p>[కనీసం 200 పదాలు. వ్యాధి స్వభావం, శరీరంలో ఏం జరుగుతుందో, ఎవరికి ఎక్కువగా వస్తుందో వివరించు.]</p>
-<p>[వ్యాధి రకాలు లేదా దశలు ఉంటే వివరించు. శాస్త్రీయ నేపథ్యం సరళంగా వివరించు.]</p>
+<h2>यह बीमारी क्या है?</h2>
+<p>[At least 200 words. Explain the nature of the disease, what happens in the body, and who is more prone to it.]</p>
+<p>[Explain types or stages if any. Explain scientific background simply.]</p>
 
-<h2>లక్షణాలు ఏమిటి?</h2>
-<p>[100 పదాలు — లక్షణాల గురించి ప్రారంభ వివరణ]</p>
+<h2>इसके लक्षण क्या हैं?</h2>
+<p>[100 words — introduction about symptoms]</p>
 <ul style="padding-left:22px; line-height:2.1;">
-  <li style="margin-bottom:8px;">✅ [లక్షణం 1 — వివరంగా]</li>
-  <li style="margin-bottom:8px;">✅ [లక్షణం 2 — వివరంగా]</li>
-  <li style="margin-bottom:8px;">✅ [లక్షణం 3 — వివరంగా]</li>
-  <li style="margin-bottom:8px;">✅ [లక్షణం 4 — వివరంగా]</li>
-  <li style="margin-bottom:8px;">✅ [లక్షణం 5 — వివరంగా]</li>
+  <li style="margin-bottom:8px;">✅ [Symptom 1 — in detail]</li>
+  <li style="margin-bottom:8px;">✅ [Symptom 2 — in detail]</li>
+  <li style="margin-bottom:8px;">✅ [Symptom 3 — in detail]</li>
+  <li style="margin-bottom:8px;">✅ [Symptom 4 — in detail]</li>
+  <li style="margin-bottom:8px;">✅ [Symptom 5 — in detail]</li>
 </ul>
 
 {_WARNING_BOX}
 
-<h2>కారణాలు ఏమిటి?</h2>
-<p>[కనీసం 200 పదాలు. జీవనశైలి, జన్యు, పర్యావరణ కారణాలు వివరంగా రాయి. ఉదాహరణలతో వివరించు.]</p>
+<h2>मुख्य कारण क्या हैं?</h2>
+<p>[At least 200 words. Explain lifestyle, genetic, and environmental causes in detail with examples.]</p>
 
-<h2>నివారణ మరియు నిర్వహణ</h2>
-<p>[100 పదాలు — ఎందుకు నివారణ సాధ్యమో వివరించు]</p>
+<h2>बचाव और प्रबंधन (Prevention & Management)</h2>
+<p>[100 words — explain why prevention is possible]</p>
 <ol style="padding-left:22px; line-height:1.9;">
-  <li style="margin-bottom:12px;"><strong>[నివారణ చర్య 1]</strong> — [2-3 వాక్యాల వివరణ]</li>
-  <li style="margin-bottom:12px;"><strong>[నివారణ చర్య 2]</strong> — [2-3 వాక్యాల వివరణ]</li>
-  <li style="margin-bottom:12px;"><strong>[నివారణ చర్య 3]</strong> — [2-3 వాక్యాల వివరణ]</li>
-  <li style="margin-bottom:12px;"><strong>[నివారణ చర్య 4]</strong> — [2-3 వాక్యాల వివరణ]</li>
-  <li style="margin-bottom:12px;"><strong>[నివారణ చర్య 5]</strong> — [2-3 వాక్యాల వివరణ]</li>
+  <li style="margin-bottom:12px;"><strong>[Prevention 1]</strong> — [2-3 sentences explanation]</li>
+  <li style="margin-bottom:12px;"><strong>[Prevention 2]</strong> — [2-3 sentences explanation]</li>
+  <li style="margin-bottom:12px;"><strong>[Prevention 3]</strong> — [2-3 sentences explanation]</li>
+  <li style="margin-bottom:12px;"><strong>[Prevention 4]</strong> — [2-3 sentences explanation]</li>
+  <li style="margin-bottom:12px;"><strong>[Prevention 5]</strong> — [2-3 sentences explanation]</li>
 </ol>
 
 {_TIP_BOX}
 
-<h2>డాక్టర్‌ను ఎప్పుడు కలవాలి?</h2>
-<p>[కనీసం 150 పదాలు. ఏ లక్షణాలు వస్తే వెంటనే వైద్యుడిని కలవాలో స్పష్టంగా చెప్పు. ఏ పరీక్షలు చేయించుకోవాలో సూచించు.]</p>
+<h2>डॉक्टर से कब मिलें?</h2>
+<p>[At least 150 words. Explain clearly what symptoms require immediate doctor consultation.]</p>
 
 {_FAQ_BLOCK}
 
-<h2>ముగింపు</h2>
-<p>[100-120 పదాలు. ముఖ్య అంశాలు సంక్షిప్తంగా గుర్తుచేసి పాఠకుడిని ధైర్యపరచు.]</p>
+<h2>निष्कर्ष (Conclusion)</h2>
+<p>[100-120 words. Briefly summarize key points and encourage the reader.]</p>
 
 {_DISCLAIMER_BLOCK}
 
 </article>
 
-ఇప్పుడు పూర్తి వ్యాసాన్ని రాయడం ప్రారంభించు:"""
+Start writing the full article now IN HINDI:"""
 
 
 # ---------------------------------------------------------------------------
@@ -256,75 +256,75 @@ def _prompt_disease(topic: str, links_text: str) -> str:
 # ---------------------------------------------------------------------------
 
 def _prompt_nutrition(topic: str, links_text: str) -> str:
-    return f"""నువ్వు ఒక అనుభవజ్ఞుడైన తెలుగు ఆహార శాస్త్ర రచయిత. సాధారణ తెలుగు కుటుంబాలకు అర్థమయ్యే సరళమైన భాషలో రాయాలి.
+    return f"""You are an experienced Hindi Health Writer. Write the ENTIRE ARTICLE ONLY IN HINDI language (Devanagari script) in a simple, conversational tone.
 
-విషయం: {topic}
+Topic: {topic}
 {links_text}
 {_COMMON_RULES}
 
-మొదటి లైన్‌లో తప్పనిసరిగా ఇవ్వు: [SLUG: write-topic-name-in-english-words-with-hyphens] (ఉదాహరణకు: [SLUG: health-benefits-of-tulasi])
+First line must be: [SLUG: write-topic-name-in-english-words-with-hyphens] (Example: [SLUG: health-benefits-of-tulasi])
 
-ఇది పోషణ / ఆహారాలకు సంబంధించిన వ్యాసం. దిగువ నిర్మాణాన్ని అనుసరించు:
+This is an article about nutrition / foods. Follow the structure below exactly:
 
 <article>
 
-<h1>[SEO keyword తో ఆకర్షణీయమైన శీర్షిక — 60 అక్షరాల లోపు]</h1>
+<h1>[Catchy Title with SEO keyword — under 60 chars (in Hindi)]</h1>
 
-<p style="font-size:1.1em; line-height:1.9; color:#2d2d2d;">[5-6 వాక్యాల ముందుమాట. ఈ పోషకం / ఆహారం ఎందుకు ముఖ్యమో, దాని లోపం వల్ల ఏం జరుగుతుందో వివరించు.]</p>
+<p style="font-size:1.1em; line-height:1.9; color:#2d2d2d;">[5-6 sentences introduction. Explain why this nutrient/food is important.]</p>
 
 {{IMAGE_PLACEHOLDER}}
 
-<h2>ఇది మన శరీరానికి ఎందుకు అవసరం?</h2>
-<p>[కనీసం 200 పదాలు. శరీరంలో ఈ పోషకం పాత్ర ఏమిటో, లోపం వల్ల ఏ సమస్యలు వస్తాయో వివరించు.]</p>
-<p>[రోజువారీ అవసరమైన పరిమాణం, వయస్సు వారీగా తేడా వివరించు.]</p>
+<h2>यह हमारे शरीर के लिए क्यों जरूरी है?</h2>
+<p>[At least 200 words. Explain the role of this nutrient in the body and what problems its deficiency causes.]</p>
+<p>[Explain daily required amount and differences based on age.]</p>
 
-<h2>ఈ పోషకం అధికంగా ఉన్న ఆహారాలు</h2>
-<p>[100 పదాలు — పరిచయం]</p>
+<h2>इस पोषक तत्व से भरपूर खाद्य पदार्थ</h2>
+<p>[100 words — introduction]</p>
 
 <div style="overflow-x:auto; margin:24px 0;">
   <table style="width:100%; border-collapse:collapse; font-family:inherit; font-size:0.97em; border-radius:10px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.08);">
     <thead>
       <tr style="background:linear-gradient(90deg,#1b5e20,#388e3c); color:#fff;">
-        <th style="padding:13px 16px; text-align:left; font-weight:600;">ఆహారం</th>
-        <th style="padding:13px 16px; text-align:left; font-weight:600;">పోషకం పరిమాణం</th>
-        <th style="padding:13px 16px; text-align:left; font-weight:600;">అదనపు లాభం</th>
+        <th style="padding:13px 16px; text-align:left; font-weight:600;">भोजन (Food)</th>
+        <th style="padding:13px 16px; text-align:left; font-weight:600;">पोषक तत्व की मात्रा (Amount)</th>
+        <th style="padding:13px 16px; text-align:left; font-weight:600;">अतिरिक्त लाभ (Benefits)</th>
       </tr>
     </thead>
     <tbody>
-      <tr style="background:#f1f8e9;"><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[ఆహారం 1]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[పరిమాణం]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[లాభం]</td></tr>
-      <tr style="background:#fff;"><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[ఆహారం 2]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[పరిమాణం]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[లాభం]</td></tr>
-      <tr style="background:#f1f8e9;"><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[ఆహారం 3]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[పరిమాణం]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[లాభం]</td></tr>
-      <tr style="background:#fff;"><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[ఆహారం 4]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[పరిమాణం]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[లాభం]</td></tr>
-      <tr style="background:#f1f8e9;"><td style="padding:11px 16px;">[ఆహారం 5]</td><td style="padding:11px 16px;">[పరిమాణం]</td><td style="padding:11px 16px;">[లాభం]</td></tr>
+      <tr style="background:#f1f8e9;"><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[Food 1]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[Amount]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[Benefit]</td></tr>
+      <tr style="background:#fff;"><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[Food 2]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[Amount]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[Benefit]</td></tr>
+      <tr style="background:#f1f8e9;"><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[Food 3]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[Amount]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[Benefit]</td></tr>
+      <tr style="background:#fff;"><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[Food 4]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[Amount]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[Benefit]</td></tr>
+      <tr style="background:#f1f8e9;"><td style="padding:11px 16px;">[Food 5]</td><td style="padding:11px 16px;">[Amount]</td><td style="padding:11px 16px;">[Benefit]</td></tr>
     </tbody>
   </table>
 </div>
 
-<p>[పైన జాబితా చేసిన ప్రతి ఆహారం గురించి 2-3 వాక్యాలు రాయి — దాని ప్రత్యేకత ఏమిటి, ఎలా తినాలి.]</p>
+<p>[Write 2-3 sentences about each food listed above — its specialty and how to eat it.]</p>
 
 {_TIP_BOX}
 
-<h2>రోజువారీ ఆహారంలో ఎలా చేర్చాలి?</h2>
-<p>[కనీసం 150 పదాలు — ఆచరణాత్మక సలహాలు]</p>
+<h2>इसे रोज़मर्रा के आहार में कैसे शामिल करें?</h2>
+<p>[At least 150 words — practical advice]</p>
 <ul style="padding-left:22px; line-height:2;">
-  <li>[ఉదయం ఆహారంలో చేర్చే విధం]</li>
-  <li>[మధ్యాహ్నం ఆహారంలో చేర్చే విధం]</li>
-  <li>[రాత్రి ఆహారంలో చేర్చే విధం]</li>
-  <li>[వంట చేసే తీరు — పోషకాలు నష్టపోకుండా]</li>
+  <li>[How to add in breakfast]</li>
+  <li>[How to add in lunch]</li>
+  <li>[How to add in dinner]</li>
+  <li>[Cooking tips to preserve nutrients]</li>
 </ul>
 
 {_WARNING_BOX}
 
 {_FAQ_BLOCK}
 
-<h2>ముగింపు</h2>
-<p>[100-120 పదాలు. చిన్న మార్పులు పెద్ద తేడా తెస్తాయని ఉత్సాహంగా చెప్పు.]</p>
+<h2>निष्कर्ष (Conclusion)</h2>
+<p>[100-120 words. Small changes make a big difference — say it enthusiastically.]</p>
 
 {_DISCLAIMER_BLOCK}
 
 </article>
 
-ఇప్పుడు పూర్తి వ్యాసాన్ని రాయడం ప్రారంభించు:"""
+Start writing the full article now IN HINDI:"""
 
 
 # ---------------------------------------------------------------------------
@@ -332,58 +332,58 @@ def _prompt_nutrition(topic: str, links_text: str) -> str:
 # ---------------------------------------------------------------------------
 
 def _prompt_herb(topic: str, links_text: str) -> str:
-    return f"""నువ్వు ఒక అనుభవజ్ఞుడైన తెలుగు ఆయుర్వేద రచయిత. సాధారణ తెలుగు కుటుంబాలకు అర్థమయ్యే సరళమైన భాషలో రాయాలి.
+    return f"""You are an experienced Hindi Ayurveda Writer. Write the ENTIRE ARTICLE ONLY IN HINDI language (Devanagari script) in a simple, conversational tone.
 
-విషయం: {topic}
+Topic: {topic}
 {links_text}
 {_COMMON_RULES}
 
-మొదటి లైన్‌లో తప్పనిసరిగా ఇవ్వు: [SLUG: write-topic-name-in-english-words-with-hyphens] (ఉదాహరణకు: [SLUG: health-benefits-of-tulasi])
+First line must be: [SLUG: write-topic-name-in-english-words-with-hyphens] (Example: [SLUG: health-benefits-of-tulasi])
 
-ఇది ఆయుర్వేద మూలిక / ఇంటి చిట్కాకు సంబంధించిన వ్యాసం. దిగువ నిర్మాణాన్ని అనుసరించు:
+This is an article about Ayurvedic herbs / home remedies. Follow the structure below exactly:
 
 <article>
 
-<h1>[SEO keyword తో ఆకర్షణీయమైన శీర్షిక — 60 అక్షరాల లోపు]</h1>
+<h1>[Catchy Title with SEO keyword — under 60 chars (in Hindi)]</h1>
 
-<p style="font-size:1.1em; line-height:1.9; color:#2d2d2d;">[5-6 వాక్యాల ముందుమాట. ఈ మూలిక భారతీయ వంటింట్లో ఎంత ముఖ్యమో, ఎందుకు తరతరాలుగా ఉపయోగిస్తున్నారో వివరించు.]</p>
+<p style="font-size:1.1em; line-height:1.9; color:#2d2d2d;">[5-6 sentences introduction. Explain why this herb is important in Indian kitchens and why it has been used for generations.]</p>
 
 {{IMAGE_PLACEHOLDER}}
 
-<h2>ఆయుర్వేదంలో ప్రాముఖ్యత</h2>
-<p>[కనీసం 200 పదాలు. చరక సంహిత, అథర్వ వేదం లేదా సుశ్రుత సంహితలో ఈ మూలిక గురించి ఏమి చెప్పారో సూచించు. చారిత్రక, సాంస్కృతిక నేపథ్యం వివరించు.]</p>
+<h2>आयुर्वेद में इसका महत्व</h2>
+<p>[At least 200 words. Mention what Charaka Samhita, Atharva Veda, or Sushruta Samhita say about this herb. Explain its historical and cultural background.]</p>
 
-<h2>ముఖ్యమైన ఔషధ గుణాలు</h2>
-<p>[100 పదాలు — ఏ రసాయన సమ్మేళనాలు ఉన్నాయో సరళంగా వివరించు]</p>
+<h2>महत्वपूर्ण औषधीय गुण</h2>
+<p>[100 words — explain its chemical compounds simply]</p>
 <ul style="padding-left:22px; line-height:2.1;">
-  <li style="margin-bottom:8px;">🌿 <strong>[గుణం 1]</strong> — [వివరణ]</li>
-  <li style="margin-bottom:8px;">🌿 <strong>[గుణం 2]</strong> — [వివరణ]</li>
-  <li style="margin-bottom:8px;">🌿 <strong>[గుణం 3]</strong> — [వివరణ]</li>
-  <li style="margin-bottom:8px;">🌿 <strong>[గుణం 4]</strong> — [వివరణ]</li>
+  <li style="margin-bottom:8px;">🌿 <strong>[Property 1]</strong> — [Explanation]</li>
+  <li style="margin-bottom:8px;">🌿 <strong>[Property 2]</strong> — [Explanation]</li>
+  <li style="margin-bottom:8px;">🌿 <strong>[Property 3]</strong> — [Explanation]</li>
+  <li style="margin-bottom:8px;">🌿 <strong>[Property 4]</strong> — [Explanation]</li>
 </ul>
 
-<h2>ఎలా తయారు చేయాలి / ఎలా వాడాలి?</h2>
-<p>[100 పదాలు — ఎందుకు సరైన తయారీ ముఖ్యమో వివరించు]</p>
+<h2>कैसे बनाएं / कैसे इस्तेमाल करें?</h2>
+<p>[100 words — explain why correct preparation is important]</p>
 <ol style="padding-left:22px; line-height:1.9;">
-  <li style="margin-bottom:12px;">[దశ 1 — వివరంగా]</li>
-  <li style="margin-bottom:12px;">[దశ 2 — వివరంగా]</li>
-  <li style="margin-bottom:12px;">[దశ 3 — వివరంగా]</li>
-  <li style="margin-bottom:12px;">[దశ 4 — వివరంగా]</li>
+  <li style="margin-bottom:12px;">[Step 1 — in detail]</li>
+  <li style="margin-bottom:12px;">[Step 2 — in detail]</li>
+  <li style="margin-bottom:12px;">[Step 3 — in detail]</li>
+  <li style="margin-bottom:12px;">[Step 4 — in detail]</li>
 </ol>
 
 <div style="overflow-x:auto; margin:24px 0;">
   <table style="width:100%; border-collapse:collapse; font-family:inherit; font-size:0.97em; border-radius:10px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.08);">
     <thead>
       <tr style="background:linear-gradient(90deg,#1b5e20,#388e3c); color:#fff;">
-        <th style="padding:13px 16px; text-align:left; font-weight:600;">వాడే విధం</th>
-        <th style="padding:13px 16px; text-align:left; font-weight:600;">పరిమాణం</th>
-        <th style="padding:13px 16px; text-align:left; font-weight:600;">ఎవరికి ఉపయోగం</th>
+        <th style="padding:13px 16px; text-align:left; font-weight:600;">इस्तेमाल का तरीका (Usage)</th>
+        <th style="padding:13px 16px; text-align:left; font-weight:600;">मात्रा (Dosage)</th>
+        <th style="padding:13px 16px; text-align:left; font-weight:600;">किसके लिए उपयोगी (Who should use)</th>
       </tr>
     </thead>
     <tbody>
-      <tr style="background:#f1f8e9;"><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[విధం 1]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[పరిమాణం]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[ఉపయోగం]</td></tr>
-      <tr style="background:#fff;"><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[విధం 2]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[పరిమాణం]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[ఉపయోగం]</td></tr>
-      <tr style="background:#f1f8e9;"><td style="padding:11px 16px;">[విధం 3]</td><td style="padding:11px 16px;">[పరిమాణం]</td><td style="padding:11px 16px;">[ఉపయోగం]</td></tr>
+      <tr style="background:#f1f8e9;"><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[Method 1]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[Amount]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[Use case]</td></tr>
+      <tr style="background:#fff;"><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[Method 2]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[Amount]</td><td style="padding:11px 16px; border-bottom:1px solid #e0e0e0;">[Use case]</td></tr>
+      <tr style="background:#f1f8e9;"><td style="padding:11px 16px;">[Method 3]</td><td style="padding:11px 16px;">[Amount]</td><td style="padding:11px 16px;">[Use case]</td></tr>
     </tbody>
   </table>
 </div>
@@ -394,14 +394,14 @@ def _prompt_herb(topic: str, links_text: str) -> str:
 
 {_FAQ_BLOCK}
 
-<h2>ముగింపు</h2>
-<p>[100-120 పదాలు. ప్రకృతి మనకు ఇచ్చిన ఈ వరాన్ని సరిగ్గా ఉపయోగించుకోమని ఉత్సాహంగా చెప్పు.]</p>
+<h2>निष्कर्ष (Conclusion)</h2>
+<p>[100-120 words. Enthusiastically tell the reader to correctly utilize this boon given by nature.]</p>
 
 {_DISCLAIMER_BLOCK}
 
 </article>
 
-ఇప్పుడు పూర్తి వ్యాసాన్ని రాయడం ప్రారంభించు:"""
+Start writing the full article now IN HINDI:"""
 
 
 # ---------------------------------------------------------------------------
@@ -409,62 +409,62 @@ def _prompt_herb(topic: str, links_text: str) -> str:
 # ---------------------------------------------------------------------------
 
 def _prompt_lifestyle(topic: str, links_text: str) -> str:
-    return f"""నువ్వు ఒక అనుభవజ్ఞుడైన తెలుగు ఆరోగ్య జీవనశైలి రచయిత. సాధారణ తెలుగు కుటుంబాలకు అర్థమయ్యే సరళమైన భాషలో రాయాలి.
+    return f"""You are an experienced Hindi Health Lifestyle Writer. Write the ENTIRE ARTICLE ONLY IN HINDI language (Devanagari script) in a simple, conversational tone.
 
-విషయం: {topic}
+Topic: {topic}
 {links_text}
 {_COMMON_RULES}
 
-మొదటి లైన్‌లో తప్పనిసరిగా ఇవ్వు: [SLUG: write-topic-name-in-english-words-with-hyphens] (ఉదాహరణకు: [SLUG: health-benefits-of-tulasi])
+First line must be: [SLUG: write-topic-name-in-english-words-with-hyphens] (Example: [SLUG: health-benefits-of-tulasi])
 
-ఇది జీవనశైలి / ఆరోగ్య అలవాట్లకు సంబంధించిన వ్యాసం. దిగువ నిర్మాణాన్ని అనుసరించు:
+This is an article about lifestyle / health habits. Follow the structure below exactly:
 
 <article>
 
-<h1>[SEO keyword తో ఆకర్షణీయమైన శీర్షిక — 60 అక్షరాల లోపు]</h1>
+<h1>[Catchy Title with SEO keyword — under 60 chars (in Hindi)]</h1>
 
-<p style="font-size:1.1em; line-height:1.9; color:#2d2d2d;">[5-6 వాక్యాల ముందుమాట. చాలా మంది ఈ విషయంలో ఎందుకు చిన్న మార్పు కూడా చేయలేకపోతున్నారో, ఇది నేర్చుకుంటే ఎంత మేలో వివరించు.]</p>
+<p style="font-size:1.1em; line-height:1.9; color:#2d2d2d;">[5-6 sentences introduction. Explain why many people fail to make even small changes in this regard, and how beneficial it is to learn this.]</p>
 
 {{IMAGE_PLACEHOLDER}}
 
-<h2>చాలా మంది చేసే సాధారణ తప్పులు</h2>
-<p>[కనీసం 200 పదాలు. నిజాయితీగా, ఆసక్తికరంగా రాయి. పాఠకుడు "అవును ఇది నేనే చేస్తున్నాను" అనుకునేలా రాయి.]</p>
+<h2>अक्सर लोग क्या गलतियां करते हैं?</h2>
+<p>[At least 200 words. Write honestly and interestingly. Make the reader feel "Yes, this is what I am doing."]</p>
 
-<h2>సరైన విధానం ఏమిటి?</h2>
-<p>[కనీసం 200 పదాలు. శాస్త్రీయ ఆధారాలతో, సరళంగా వివరించు.]</p>
+<h2>सही तरीका क्या है?</h2>
+<p>[At least 200 words. Explain simply with scientific evidence.]</p>
 
-<h2>రోజువారీ దినచర్యలో మార్పులు — అడుగు అడుగుగా</h2>
-<p>[100 పదాలు — ఈ మార్పులు ఎందుకు సాధ్యమో వివరించు]</p>
+<h2>दिनचर्या में बदलाव — कदम दर कदम</h2>
+<p>[100 words — explain why these changes are possible]</p>
 <ol style="padding-left:22px; line-height:1.9;">
-  <li style="margin-bottom:16px;"><strong>[మార్పు 1]</strong><br>[3-4 వాక్యాలు — ఎందుకు ముఖ్యమో, ఎలా మొదలుపెట్టాలో వివరించు]</li>
-  <li style="margin-bottom:16px;"><strong>[మార్పు 2]</strong><br>[3-4 వాక్యాలు]</li>
-  <li style="margin-bottom:16px;"><strong>[మార్పు 3]</strong><br>[3-4 వాక్యాలు]</li>
-  <li style="margin-bottom:16px;"><strong>[మార్పు 4]</strong><br>[3-4 వాక్యాలు]</li>
-  <li style="margin-bottom:16px;"><strong>[మార్పు 5]</strong><br>[3-4 వాక్యాలు]</li>
+  <li style="margin-bottom:16px;"><strong>[Change 1]</strong><br>[3-4 sentences — explain why it's important and how to start]</li>
+  <li style="margin-bottom:16px;"><strong>[Change 2]</strong><br>[3-4 sentences]</li>
+  <li style="margin-bottom:16px;"><strong>[Change 3]</strong><br>[3-4 sentences]</li>
+  <li style="margin-bottom:16px;"><strong>[Change 4]</strong><br>[3-4 sentences]</li>
+  <li style="margin-bottom:16px;"><strong>[Change 5]</strong><br>[3-4 sentences]</li>
 </ol>
 
 {_TIP_BOX}
 
-<h2>ఇవి తప్పకుండా గుర్తుంచుకో</h2>
+<h2>इन्हें हमेशा याद रखें</h2>
 <ul style="padding-left:22px; line-height:2.1;">
-  <li style="margin-bottom:8px;">📌 [గుర్తుంచుకోవాల్సిన విషయం 1]</li>
-  <li style="margin-bottom:8px;">📌 [గుర్తుంచుకోవాల్సిన విషయం 2]</li>
-  <li style="margin-bottom:8px;">📌 [గుర్తుంచుకోవాల్సిన విషయం 3]</li>
-  <li style="margin-bottom:8px;">📌 [గుర్తుంచుకోవాల్సిన విషయం 4]</li>
+  <li style="margin-bottom:8px;">📌 [Thing to remember 1]</li>
+  <li style="margin-bottom:8px;">📌 [Thing to remember 2]</li>
+  <li style="margin-bottom:8px;">📌 [Thing to remember 3]</li>
+  <li style="margin-bottom:8px;">📌 [Thing to remember 4]</li>
 </ul>
 
 {_WARNING_BOX}
 
 {_FAQ_BLOCK}
 
-<h2>ముగింపు</h2>
-<p>[100-120 పదాలు. చిన్న మొదలే పెద్ద విజయం — పాఠకుడిని ఉత్సాహంగా చేర్చు.]</p>
+<h2>निष्कर्ष (Conclusion)</h2>
+<p>[100-120 words. A small start is a big victory — encourage the reader.]</p>
 
 {_DISCLAIMER_BLOCK}
 
 </article>
 
-ఇప్పుడు పూర్తి వ్యాసాన్ని రాయడం ప్రారంభించు:"""
+Start writing the full article now IN HINDI:"""
 
 
 # ---------------------------------------------------------------------------
@@ -472,63 +472,63 @@ def _prompt_lifestyle(topic: str, links_text: str) -> str:
 # ---------------------------------------------------------------------------
 
 def _prompt_women(topic: str, links_text: str) -> str:
-    return f"""నువ్వు ఒక అనుభవజ్ఞుడైన తెలుగు మహిళల ఆరోగ్య రచయిత. ఆప్యాయంగా, అర్థమయ్యే సరళమైన భాషలో రాయాలి.
+    return f"""You are an experienced Hindi Women's Health Writer. Write the ENTIRE ARTICLE ONLY IN HINDI language (Devanagari script) affectionately in simple language.
 
-విషయం: {topic}
+Topic: {topic}
 {links_text}
 {_COMMON_RULES}
 
-మొదటి లైన్‌లో తప్పనిసరిగా ఇవ్వు: [SLUG: write-topic-name-in-english-words-with-hyphens] (ఉదాహరణకు: [SLUG: health-benefits-of-tulasi])
+First line must be: [SLUG: write-topic-name-in-english-words-with-hyphens] (Example: [SLUG: health-benefits-of-tulasi])
 
-ఇది మహిళల ఆరోగ్యానికి సంబంధించిన వ్యాసం. ఆప్యాయంగా, నమ్మకంగా రాయి. దిగువ నిర్మాణాన్ని అనుసరించు:
+This is an article about women's health. Write affectionately and confidently. Follow the structure below exactly:
 
 <article>
 
-<h1>[SEO keyword తో ఆకర్షణీయమైన శీర్షిక — 60 అక్షరాల లోపు]</h1>
+<h1>[Catchy Title with SEO keyword — under 60 chars (in Hindi)]</h1>
 
-<p style="font-size:1.1em; line-height:1.9; color:#2d2d2d;">[5-6 వాక్యాల ఆప్యాయమైన ముందుమాట. చాలా మంది మహిళలు ఈ సమస్యను మౌనంగా భరిస్తారని, ఇది సహజమే కానీ దీని గురించి మాట్లాడటం ముఖ్యమని చెప్పు.]</p>
+<p style="font-size:1.1em; line-height:1.9; color:#2d2d2d;">[5-6 sentences affectionate introduction. Mention that many women endure this problem silently, it's natural but important to talk about it.]</p>
 
 {{IMAGE_PLACEHOLDER}}
 
-<h2>ఇది అంటే ఏమిటి?</h2>
-<p>[కనీసం 200 పదాలు. స్పష్టంగా, అర్థమయ్యే భాషలో వివరించు. శాస్త్రీయ వివరణను సరళంగా చెప్పు.]</p>
+<h2>यह क्या है?</h2>
+<p>[At least 200 words. Explain clearly in understandable language. Explain the scientific reason simply.]</p>
 
-<h2>లక్షణాలు మరియు సంకేతాలు</h2>
-<p>[100 పదాలు — ఎందుకు లక్షణాలను గుర్తించడం ముఖ్యమో వివరించు]</p>
+<h2>लक्षण और संकेत (Symptoms & Signs)</h2>
+<p>[100 words — explain why identifying symptoms is important]</p>
 <ul style="padding-left:22px; line-height:2.1;">
-  <li style="margin-bottom:8px;">🔴 [లక్షణం 1 — వివరంగా]</li>
-  <li style="margin-bottom:8px;">🔴 [లక్షణం 2 — వివరంగా]</li>
-  <li style="margin-bottom:8px;">🔴 [లక్షణం 3 — వివరంగా]</li>
-  <li style="margin-bottom:8px;">🔴 [లక్షణం 4 — వివరంగా]</li>
-  <li style="margin-bottom:8px;">🔴 [లక్షణం 5 — వివరంగా]</li>
+  <li style="margin-bottom:8px;">🔴 [Symptom 1 — in detail]</li>
+  <li style="margin-bottom:8px;">🔴 [Symptom 2 — in detail]</li>
+  <li style="margin-bottom:8px;">🔴 [Symptom 3 — in detail]</li>
+  <li style="margin-bottom:8px;">🔴 [Symptom 4 — in detail]</li>
+  <li style="margin-bottom:8px;">🔴 [Symptom 5 — in detail]</li>
 </ul>
 
-<h2>సహజ నివారణ మరియు నిర్వహణ</h2>
-<p>[కనీసం 200 పదాలు — ఆహారం, జీవనశైలి, ఒత్తిడి నిర్వహణ వివరంగా రాయి]</p>
+<h2>प्राकृतिक बचाव और प्रबंधन (Natural Prevention & Management)</h2>
+<p>[At least 200 words — write about diet, lifestyle, stress management in detail]</p>
 <ol style="padding-left:22px; line-height:1.9;">
-  <li style="margin-bottom:12px;"><strong>[చర్య 1]</strong> — [2-3 వాక్యాలు]</li>
-  <li style="margin-bottom:12px;"><strong>[చర్య 2]</strong> — [2-3 వాక్యాలు]</li>
-  <li style="margin-bottom:12px;"><strong>[చర్య 3]</strong> — [2-3 వాక్యాలు]</li>
-  <li style="margin-bottom:12px;"><strong>[చర్య 4]</strong> — [2-3 వాక్యాలు]</li>
+  <li style="margin-bottom:12px;"><strong>[Action 1]</strong> — [2-3 sentences]</li>
+  <li style="margin-bottom:12px;"><strong>[Action 2]</strong> — [2-3 sentences]</li>
+  <li style="margin-bottom:12px;"><strong>[Action 3]</strong> — [2-3 sentences]</li>
+  <li style="margin-bottom:12px;"><strong>[Action 4]</strong> — [2-3 sentences]</li>
 </ol>
 
 {_TIP_BOX}
 
 {_WARNING_BOX}
 
-<h2>వైద్యుడిని ఎప్పుడు కలవాలి?</h2>
-<p>[కనీసం 150 పదాలు. ఏ సంకేతాలు వస్తే వెంటనే వైద్యుడిని కలవాలో స్పష్టంగా చెప్పు. ముందుగా కలవడం వల్ల ఎంత మేలో వివరించు.]</p>
+<h2>डॉक्टर से कब मिलें?</h2>
+<p>[At least 150 words. Explain clearly what signs require immediate doctor consultation. Explain the benefit of meeting early.]</p>
 
 {_FAQ_BLOCK}
 
-<h2>ముగింపు</h2>
-<p>[100-120 పదాలు. నీ स्वास्थ्य (Health) నీ చేతిలోనే ఉందని, సకాలంలో శ్రద్ధ తీసుకోమని ఆప్యాయంగా చెప్పు.]</p>
+<h2>निष्कर्ष (Conclusion)</h2>
+<p>[100-120 words. Tell her affectionately that her health is in her hands and to take care on time.]</p>
 
 {_DISCLAIMER_BLOCK}
 
 </article>
 
-ఇప్పుడు పూర్తి వ్యాసాన్ని రాయడం ప్రారంభించు:"""
+Start writing the full article now IN HINDI:"""
 
 
 # ---------------------------------------------------------------------------
@@ -540,7 +540,7 @@ def _build_article_prompt(topic: str, past_urls: list = None) -> str:
 
     links_text = ""
     if past_urls:
-        links_text = "\nకింది మన పాత ఆర్టికల్స్ లింక్స్ ని వ్యాసంలో ఎక్కడైనా సంబంధం ఉన్నచోట సహజంగా (Natural anchor text) 1 లేదా 2 లింక్స్ గా (HTML <a> tag) వాడండి:\n"
+        links_text = "\nPlease insert 1 or 2 natural HTML <a> links to these past articles where relevant in the content:\n"
         for url_info in past_urls:
             links_text += f"- {url_info['title']}: {url_info['url']}\n"
 
@@ -567,29 +567,31 @@ def _extract_title(html_content: str) -> str:
 
 def _build_tags(topic: str) -> list:
     """Generate relevant Blogger tags/labels."""
-    base_tags = ["Hindi", "AarogyaGuruji"]
+    # "Hindi" is the only English tag (to match the menu item).
+    # All remaining tags are in Devanagari script (Hindi).
+    base_tags = ["Hindi", "स्वास्थ्य"]
     
     tag_map = {
-        "ఆయుర్వేద": ["आयुर्वेद", "Ayurveda"],
-        "అయుర్వేద": ["आयुर्वेद", "Ayurveda"],
-        "డయాబెటిస్": ["मधुमेह", "Diabetes"],
-        "మధుమేహం": ["मधुमेह", "Diabetes"],
-        "గుండె": ["हृदय स्वास्थ्य", "Heart Health"],
-        "రక్తపోటు": ["BP", "Blood Pressure", "रक्तचाप"],
-        "కిడ్నీ": ["किडनी स्वास्थ्य", "Kidney Health"],
-        "లివర్": ["लिवर स्वास्थ्य", "Liver Health"],
-        "క్యాన్సర్": ["कैंसर", "Cancer Awareness"],
-        "యోగ": ["योग", "Yoga", "व्यायाम"],
-        "మానసిక": ["मानसिक स्वास्थ्य", "Mental Health"],
-        "ఆహారం": ["पोषण", "Nutrition", "आहार"],
-        "చర్మం": ["स्किन केयर", "Skin Care"],
-        "జుట్టు": ["हेयर केयर", "Hair Care"],
-        "నిద్ర": ["नींद का स्वास्थ्य", "Sleep Health"],
-        "PCOS": ["PCOS", "महिला स्वास्थ्य", "Women Health"],
-        "బరువు": ["वजन घटाना", "Weight Loss"],
-        "ఇమ్యూనిటీ": ["इम्युनिटी", "Immunity"],
-        "తులసి": ["जड़ी-बूटियां", "Herbs", "घरेलू नुस्खे"],
-        "పసుపు": ["जड़ी-बूटियां", "Herbs"],
+        "ఆయుర్వేద": ["आयुर्वेद"],
+        "అయుర్వేద": ["आयुर्वेद"],
+        "డయాబెటిస్": ["मधुमेह"],
+        "మధుమేహం": ["मधुमेह"],
+        "గుండె": ["हृदय स्वास्थ्य"],
+        "రక్తపోటు": ["रक्तचाप"],
+        "కిడ్నీ": ["किडनी स्वास्थ्य"],
+        "లివర్": ["लिवर स्वास्थ्य"],
+        "క్యాన్సర్": ["कैंसर"],
+        "యోగ": ["योग", "व्यायाम"],
+        "మానసిక": ["मानसिक स्वास्थ्य"],
+        "ఆహారం": ["पोषण", "आहार"],
+        "చర్మం": ["स्किन केयर"],
+        "జుట్టు": ["हेयर केयर"],
+        "నిద్ర": ["नींद का स्वास्थ्य"],
+        "PCOS": ["महिला स्वास्थ्य"],
+        "బరువు": ["वजन घटाना"],
+        "ఇమ్యూనిటీ": ["इम्युनिटी"],
+        "తులసి": ["जड़ी-बूटियां", "घरेलू नुस्खे"],
+        "పసుపు": ["जड़ी-बूटियां"],
     }
     
     extra_tags = []

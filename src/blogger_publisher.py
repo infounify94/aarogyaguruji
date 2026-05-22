@@ -37,11 +37,14 @@ def _build_schema_json(title: str, body_html: str, url_hint: str = "") -> str:
     schemas = []
 
     # Article Schema
+    lang_env = os.getenv("LANGUAGE", "telugu")
+    in_lang = "hi" if lang_env.lower() == "hindi" else "te"
+    
     article_schema = {
         "@context": "https://schema.org",
         "@type": "Article",
         "headline": title[:110],
-        "inLanguage": "te",
+        "inLanguage": in_lang,
         "author": {"@type": "Organization", "name": "AarogyaGuruji",
                    "url": "https://aarogyaguruji.blogspot.com"},
         "publisher": {"@type": "Organization", "name": "AarogyaGuruji",
