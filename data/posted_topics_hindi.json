@@ -274,13 +274,6 @@
       "posted_at": "2026-05-31T14:20:18.087998"
     },
     {
-      "slug": "వదధల-ఆరగయ-సమసయల-నరవహణ",
-      "topic": "వృద్ధుల ఆరోగ్య సమస్యలు - నిర్వహణ",
-      "title": "वरिष्ठ नागरिकों की सेहत: चुनौतियाँ और सही देखभाल",
-      "url": "https://aarogyaguruji.blogspot.com/2026/05/elderly-health-problems-management.html",
-      "posted_at": "2026-05-31T14:22:06.713788"
-    },
-    {
       "slug": "ఆయరవద-నదర-వధన",
       "topic": "ఆయుర్వేద నిద్ర విధానం",
       "title": "आयुर्वेदिक निद्रा: अच्छी नींद का प्राचीन रहस्य",
@@ -1434,13 +1427,6 @@
       "title": "पित्ताशय की पथरी: 2000 स्टोन का अनोखा ऑपरेशन!",
       "url": "https://aarogyaguruji.blogspot.com/2026/07/gallstones-2000-stones-laparoscopic.html",
       "posted_at": "2026-07-07T04:30:29.102573"
-    },
-    {
-      "slug": "బరహమచరయ-ఆయరవద-దషట",
-      "topic": "బ్రహ్మచర్య - ఆయుర్వేద దృష్టి",
-      "title": "ब्रह्मचर्य: आयुर्वेद का जीवन शक्ति सूत्र",
-      "url": "https://aarogyaguruji.blogspot.com/2026/07/brahmacharya-ayurvedic-perspective.html",
-      "posted_at": "2026-07-07T04:31:45.790174"
     },
     {
       "slug": "అలజమరస-వయధ-అరథ",
@@ -3093,8 +3079,29 @@
       "title": "उम्र 70 के बाद भी मांसपेशियां क्यों हैं ज़रूरी? अनुपम खेर से सीखें",
       "url": "https://aarogyaguruji.blogspot.com/2026/08/muscle-strength-after-70-anupam-kher.html",
       "posted_at": "2026-08-24T02:05:54.855947"
+    },
+    {
+      "slug": "according-to-himss-generative-ai-tools-are-now-used-by-over-80of-apac-healthcare-respondents-yet-cos",
+      "topic": "According to HIMSS, generative AI tools are now used by over 80%of APAC healthcare respondents, yet cost and governance gaps continue to limit adoption beyond routine operational work.",
+      "title": "जेनरेटिव एआई (Generative AI) और हेल्थकेयर (Healthcare): एशिया-प्रशांत क्षेत्र में बदलती तस्वीर और चुनौतियां",
+      "url": "https://aarogyaguruji.blogspot.com/2026/08/generative-ai-in-apac-healthcare.html",
+      "posted_at": "2026-08-24T13:32:03.701068"
+    },
+    {
+      "slug": "బరహమచరయ-ఆయరవద-దషట",
+      "topic": "బ్రహ్మచర్య - ఆయుర్వేద దృష్టి",
+      "title": "ब्रह्मचर्य: आयुर्वेद का एक अनमोल सूत्र",
+      "url": "https://aarogyaguruji.blogspot.com/2026/08/brahmacharya-ayurvedic-perspective_01903767198.html",
+      "posted_at": "2026-08-24T13:33:23.163619"
+    },
+    {
+      "slug": "వదధల-ఆరగయ-సమసయల-నరవహణ",
+      "topic": "వృద్ధుల ఆరోగ్య సమస్యలు - నిర్వహణ",
+      "title": "वरिष्ठ नागरिकों के स्वास्थ्य चुनौतियाँ और समाधान",
+      "url": "https://aarogyaguruji.blogspot.com/2026/08/elderly-health-problems-management.html",
+      "posted_at": "2026-08-24T13:34:40.170166"
     }
   ],
-  "last_updated": "2026-08-24T02:05:54.855955",
-  "total_posts": 442
+  "last_updated": "2026-08-24T13:34:40.170177",
+  "total_posts": 443
 }
