@@ -5720,13 +5720,6 @@
       "posted_at": "2026-07-19T09:28:30.263197"
     },
     {
-      "slug": "వదధల-మనసక-ఆరగయ",
-      "topic": "వృద్ధుల మానసిక ఆరోగ్యం",
-      "title": "వృద్ధుల మానసిక ఆరోగ్యం: కుటుంబ సభ్యులు తీసుకోవాల్సిన జాగ్రత్తలు",
-      "url": "https://aarogyaguruji.blogspot.com/2026/07/vruddhula-manasika-arogyam.html",
-      "posted_at": "2026-07-19T09:29:45.813309"
-    },
-    {
       "slug": "peptide-supplement-risks-experts-warn-of-insufficient-evidence-of-health-benefits",
       "topic": "Peptide supplement risks: Experts warn of insufficient evidence of health benefits",
       "title": "పెప్టైడ్ సప్లిమెంట్లు: వాస్తవంగా ఉపయోగపడతాయా? నిపుణుల హెచ్చరిక!",
@@ -8427,13 +8420,6 @@
       "title": "శ్రీనగర్‌లో హెల్త్‌కేర్ సమ్మిట్: క్వాటర్నరీ కేర్‌పై దృష్టి",
       "url": "https://aarogyaguruji.blogspot.com/2026/08/healthcare-summit-srinagar-quaternary.html",
       "posted_at": "2026-08-26T08:11:06.961059"
-    },
-    {
-      "slug": "పలల-ఆరగయగ-ఉచ-10-చటకల",
-      "topic": "పల్లు ఆరోగ్యంగా ఉంచే 10 చిట్కాలు",
-      "title": "పళ్లు ఆరోగ్యంగా ఉంచే 10 ఆయుర్వేద చిట్కాలు",
-      "url": "https://aarogyaguruji.blogspot.com/2026/08/10-tips-for-healthy-teeth-ayurveda.html",
-      "posted_at": "2026-08-26T08:12:25.791630"
     },
     {
       "slug": "delhi-health-minister-reviews-h1n1-preparedness-as-count-grows",
@@ -12585,8 +12571,57 @@
       "title": "కుటుంబ పోలికలు: పిల్లల ఆత్మవిశ్వాసం, మనోబలంపై తీవ్ర ప్రభావం!",
       "url": "https://aarogyaguruji.blogspot.com/2026/10/family-comparisons-children-confidence.html",
       "posted_at": "2026-10-12T21:52:58.826650"
+    },
+    {
+      "slug": "antenatal-cardiac-risk-postpartum-follow-up-with-garima-sharma-md-contemporary-obgyn",
+      "topic": "Antenatal cardiac risk, postpartum follow-up with Garima Sharma, MD - Contemporary OB/GYN",
+      "title": "గర్భధారణలో గుండె రిస్క్: ప్రసవానంతర సంరక్షణ",
+      "url": "https://aarogyaguruji.blogspot.com/2026/10/antenatal-cardiac-risk-postpartum.html",
+      "posted_at": "2026-10-13T08:11:24.959584"
+    },
+    {
+      "slug": "flu-shots-missed-a-dose-no-need-to-restart",
+      "topic": "Flu shots: Missed a dose? No need to restart",
+      "title": "ఫ్లూ షాట్స్: డోస్ మిస్ అయినా, మళ్ళీ మొదటి నుండి అక్కర్లేదు!",
+      "url": "https://aarogyaguruji.blogspot.com/2026/10/flu-shots-missed-dose-no-restart.html",
+      "posted_at": "2026-10-13T08:12:43.394841"
+    },
+    {
+      "slug": "పలల-ఆరగయగ-ఉచ-10-చటకల",
+      "topic": "పల్లు ఆరోగ్యంగా ఉంచే 10 చిట్కాలు",
+      "title": "పల్లు ఆరోగ్యంగా ఉంచే 10 ఆయుర్వేద చిట్కాలు",
+      "url": "https://aarogyaguruji.blogspot.com/2026/10/10-ayurvedic-tips-for-healthy-teeth.html",
+      "posted_at": "2026-10-13T08:14:32.428800"
+    },
+    {
+      "slug": "misinformation-cost-remain-hurdles-to-total-vaccination-in-kids",
+      "topic": "Misinformation, cost remain hurdles to total vaccination in kids",
+      "title": "పిల్లల టీకాలకు అడ్డంకులు: అపోహలు, ఖర్చు - పూర్తి అవగాహన!",
+      "url": "https://aarogyaguruji.blogspot.com/2026/10/misinformation-cost-hurdles-kids.html",
+      "posted_at": "2026-10-13T08:15:50.272998"
+    },
+    {
+      "slug": "new-hospitals-same-struggles-for-jammus-hill-residents",
+      "topic": "New hospitals, same struggles for Jammu’s hill residents",
+      "title": "జమ్మూ కొండ ప్రాంత ప్రజల ఆరోగ్య కష్టాలు: కొత్త ఆసుపత్రులు, పాత సమస్యలు",
+      "url": "https://aarogyaguruji.blogspot.com/2026/10/jammu-hill-residents-health-struggles.html",
+      "posted_at": "2026-10-13T08:17:07.139676"
+    },
+    {
+      "slug": "వదధల-మనసక-ఆరగయ",
+      "topic": "వృద్ధుల మానసిక ఆరోగ్యం",
+      "title": "ఆనందంగా, ఆరోగ్యంగా వృద్ధాప్యం: మానసిక శక్తికి మార్గాలు",
+      "url": "https://aarogyaguruji.blogspot.com/2026/10/elderly-mental-health-tips-telugu.html",
+      "posted_at": "2026-10-13T08:18:24.055521"
+    },
+    {
+      "slug": "pope-leo-xiv-will-be-admitted-to-a-hospital-in-rome-for-lung-nodule-surgery-video",
+      "topic": "Pope Leo XIV will be admitted to a hospital in Rome for lung nodule surgery (Video)",
+      "title": "పోప్ లియో XIV కి ఊపిరితిత్తుల కంతి సర్జరీ: పూర్తి వివరాలు",
+      "url": "https://aarogyaguruji.blogspot.com/2026/10/pope-leo-xiv-lung-nodule-surgery.html",
+      "posted_at": "2026-10-13T08:19:42.446740"
     }
   ],
-  "last_updated": "2026-10-12T21:52:58.826661",
-  "total_posts": 1798
+  "last_updated": "2026-10-13T08:19:42.446755",
+  "total_posts": 1803
 }
