@@ -2899,13 +2899,6 @@
       "posted_at": "2026-09-12T15:47:43.974816"
     },
     {
-      "slug": "ఇట-లపల-వయ-కలషయ",
-      "topic": "ఇంటి లోపల వాయు కాలుష్యం",
-      "title": "घर के अंदर वायु प्रदूषण: छिपी हुई बीमारी का खतरा",
-      "url": "https://aarogyaguruji.blogspot.com/2026/09/ghar-ke-andar-vayu-pradushan-kya-hai.html",
-      "posted_at": "2026-09-12T15:49:03.046133"
-    },
-    {
       "slug": "వగన-డట-ఆరగయ-పరయజనల",
       "topic": "వేగన్ డైట్ - ఆరోగ్య ప్రయోజనాలు",
       "title": "वेगन डाइट: सेहत और स्वाद का अद्भुत संगम",
@@ -4080,8 +4073,22 @@
       "title": "पंजाब में नशीली दवाओं के खिलाफ जंग: 35 विशेष अदालतों से मिलेगी तेज़ी",
       "url": "https://aarogyaguruji.blogspot.com/2026/11/punjab-ndps-courts-drug-cases-fast-track.html",
       "posted_at": "2026-11-01T06:32:40.000427"
+    },
+    {
+      "slug": "ఇట-లపల-వయ-కలషయ",
+      "topic": "ఇంటి లోపల వాయు కాలుష్యం",
+      "title": "घर की हवा में जहर: इनडोर वायु प्रदूषण से बचें!",
+      "url": "https://aarogyaguruji.blogspot.com/2026/11/indoor-air-pollution-causes-symptoms.html",
+      "posted_at": "2026-11-02T06:32:20.435981"
+    },
+    {
+      "slug": "అరట-చటట-ఔషధ-ఉపయగల",
+      "topic": "అరటి చెట్టు ఔషధ ఉపయోగాలు",
+      "title": "केला: प्रकृति का अनमोल औषधीय खजाना",
+      "url": "https://aarogyaguruji.blogspot.com/2026/11/medicinal-uses-of-banana-tree.html",
+      "posted_at": "2026-11-02T06:33:34.183994"
     }
   ],
-  "last_updated": "2026-11-01T06:32:40.000436",
-  "total_posts": 583
+  "last_updated": "2026-11-02T06:33:34.184004",
+  "total_posts": 584
 }
