@@ -785,13 +785,6 @@
       "posted_at": "2026-06-26T04:49:28.066376"
     },
     {
-      "slug": "ఆరగయకరమన-భరతయ-ఆహర",
-      "topic": "ఆరోగ్యకరమైన భారతీయ ఆహారం",
-      "title": "स्वस्थ भारतीय आहार: वजन प्रबंधन के लिए पौष्टिक विकल्प",
-      "url": "https://aarogyaguruji.blogspot.com/2026/06/healthy-indian-food-for-weight.html",
-      "posted_at": "2026-06-26T04:51:52.029578"
-    },
-    {
       "slug": "klinik-tuah-welcomes-its-10000th-knee-pain-patient-in-under-five-years",
       "topic": "Klinik Tuah Welcomes Its 10,000th Knee Pain Patient in Under Five Years",
       "title": "घुटने का दर्द: राहत की नई उम्मीद",
@@ -4122,8 +4115,22 @@
       "title": "कमजोर इम्यूनिटी: लक्षण, कारण और प्राकृतिक बूस्टर",
       "url": "https://aarogyaguruji.blogspot.com/2026/11/immunity-boost-natural-drinks.html",
       "posted_at": "2026-11-05T07:09:26.632244"
+    },
+    {
+      "slug": "పచచళళ-తనడ-వలన-పరయజనల",
+      "topic": "పచ్చళ్ళు తినడం వలన ప్రయోజనాలు",
+      "title": "अचार के फायदे: क्यों यह आपकी सेहत के लिए अच्छा हो सकता है?",
+      "url": "https://aarogyaguruji.blogspot.com/2026/11/benefits-of-eating-pickles.html",
+      "posted_at": "2026-11-05T20:13:53.044797"
+    },
+    {
+      "slug": "ఆరగయకరమన-భరతయ-ఆహర",
+      "topic": "ఆరోగ్యకరమైన భారతీయ ఆహారం",
+      "title": "स्वस्थ भारतीय भोजन: तंदुरुस्ती का खजाना",
+      "url": "https://aarogyaguruji.blogspot.com/2026/11/healthy-indian-food-for-wellness.html",
+      "posted_at": "2026-11-05T20:17:04.571230"
     }
   ],
-  "last_updated": "2026-11-05T07:09:26.632257",
-  "total_posts": 589
+  "last_updated": "2026-11-05T20:17:04.571241",
+  "total_posts": 590
 }
